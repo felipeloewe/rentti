@@ -102,6 +102,9 @@ def upload_file(local: Path, remote_dir: str) -> None:
 
 def should_skip(path: Path) -> bool:
     rel = path.relative_to(ROOT)
+    # Always allow Apache/gitkeep markers
+    if path.name in {".htaccess", ".gitkeep"}:
+        return False
     parts = set(rel.parts)
     if parts & SKIP_NAMES:
         return True
