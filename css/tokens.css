@@ -23,12 +23,12 @@
   --color-line: #ebebeb;
   --color-line-strong: #dddddd;
 
-  /* Hero atmosphere */
+  /* Hero atmosphere — warm gray + soft mint wash */
   --hero-scrim: linear-gradient(
     180deg,
-    rgba(34, 34, 34, 0.28) 0%,
-    rgba(34, 34, 34, 0.18) 40%,
-    rgba(34, 34, 34, 0.55) 100%
+    rgba(34, 34, 34, 0.32) 0%,
+    rgba(34, 42, 38, 0.22) 38%,
+    rgba(28, 40, 34, 0.62) 100%
   );
   --hero-wash: linear-gradient(
     135deg,

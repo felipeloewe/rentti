@@ -67,6 +67,8 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  background:
+    #3a4540 url("../assets/hero/apartment.jpg") center 42% / cover no-repeat;
 }
 
 .hero__media img {

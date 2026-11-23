@@ -1,29 +1,33 @@
-.js-ready .hero__brand,
-.js-ready .hero__title,
-.js-ready .hero__support,
-.js-ready .hero__actions {
-  opacity: 0;
-  transform: translateY(1rem);
-  animation: rise-in var(--duration-slow) var(--ease-out) forwards;
-}
+@media (prefers-reduced-motion: no-preference) {
+  .js-ready .hero__brand,
+  .js-ready .hero__title,
+  .js-ready .hero__support,
+  .js-ready .hero__actions {
+    animation: rise-in var(--duration-slow) var(--ease-out) both;
+  }
 
-.js-ready .hero__brand {
-  animation-delay: 50ms;
-}
+  .js-ready .hero__brand {
+    animation-delay: 50ms;
+  }
 
-.js-ready .hero__title {
-  animation-delay: 140ms;
-}
+  .js-ready .hero__title {
+    animation-delay: 140ms;
+  }
 
-.js-ready .hero__support {
-  animation-delay: 240ms;
-}
+  .js-ready .hero__support {
+    animation-delay: 240ms;
+  }
 
-.js-ready .hero__actions {
-  animation-delay: 340ms;
+  .js-ready .hero__actions {
+    animation-delay: 340ms;
+  }
 }
 
 @keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
