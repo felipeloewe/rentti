@@ -110,10 +110,27 @@ function rentti_migrate(PDO $pdo): void
         )'
     );
 
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS property_nearby_points (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            property_id INTEGER NOT NULL,
+            category TEXT NOT NULL DEFAULT \'zonas_cercanas\',
+            subtype TEXT,
+            name TEXT NOT NULL,
+            distance_m INTEGER,
+            walk_min INTEGER,
+            drive_min INTEGER,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+        )'
+    );
+
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_properties_status ON properties(status)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_properties_type ON properties(property_type)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_properties_commune ON properties(commune)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_photos_property ON property_photos(property_id)');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_nearby_property ON property_nearby_points(property_id)');
 
     rentti_ensure_columns($pdo, 'properties', [
         'storage_price_uf' => 'REAL',

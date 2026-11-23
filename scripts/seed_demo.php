@@ -39,7 +39,8 @@ if ($forceAmenities && $existing > 0) {
     $p['condominium'] = 1;
     $p['parking_covered'] = max(1, (int) ($p['parking_covered'] ?? 0));
     rentti_save_property($p);
-    echo "Updated amenities on id=$id code={$p['code']}\n";
+    rentti_replace_nearby($id, rentti_demo_nearby_points());
+    echo "Updated amenities + zone on id=$id code={$p['code']}\n";
     exit(0);
 }
 
@@ -83,4 +84,5 @@ $p['owner_doc_number'] = '11.111.111-1';
 $p['published_at'] = rentti_now();
 
 $id = rentti_save_property($p);
+rentti_replace_nearby($id, rentti_demo_nearby_points());
 echo "Seeded property id=$id code={$p['code']}\n";

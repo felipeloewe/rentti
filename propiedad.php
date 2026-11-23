@@ -188,6 +188,130 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
           </section>
         <?php endif; ?>
 
+        <?php
+          $nearbyPoints = rentti_list_nearby((int) $property['id']);
+          $nearbyGrouped = rentti_group_nearby($nearbyPoints);
+          $hasNearby = count($nearbyPoints) > 0;
+        ?>
+        <?php if ($hasNearby): ?>
+          <section class="detail-section zone-info" data-zone-info>
+            <h2 class="zone-info__title">
+              <?= rentti_zone_icon_svg('pin', 'zone-info__pin') ?>
+              Información de la zona
+            </h2>
+            <div class="zone-tabs" role="tablist" aria-label="Información de la zona">
+              <?php $firstTab = true; foreach (rentti_zone_tabs() as $tabKey => $tabMeta):
+                $count = count($nearbyGrouped[$tabKey] ?? []);
+                if ($count === 0) {
+                    continue;
+                }
+              ?>
+                <button
+                  type="button"
+                  class="zone-tabs__btn<?= $firstTab ? ' is-active' : '' ?>"
+                  role="tab"
+                  aria-selected="<?= $firstTab ? 'true' : 'false' ?>"
+                  data-zone-tab="<?= h($tabKey) ?>"
+                >
+                  <?= rentti_zone_icon_svg($tabMeta['icon'], 'zone-tabs__icon') ?>
+                  <span><?= h($tabMeta['label']) ?></span>
+                </button>
+              <?php $firstTab = false; endforeach; ?>
+            </div>
+
+            <?php $firstPanel = true; foreach (rentti_zone_tabs() as $tabKey => $tabMeta):
+              $items = $nearbyGrouped[$tabKey] ?? [];
+              if (!$items) {
+                  continue;
+              }
+            ?>
+              <div
+                class="zone-panel<?= $firstPanel ? ' is-active' : '' ?>"
+                role="tabpanel"
+                data-zone-panel="<?= h($tabKey) ?>"
+                <?= $firstPanel ? '' : 'hidden' ?>
+              >
+                <?php if ($tabKey === 'zonas_cercanas'):
+                  $transit = rentti_group_transit($items);
+                ?>
+                  <div class="zone-transit-grid">
+                    <?php foreach (rentti_zone_subtypes() as $subKey => $subLabel):
+                      $colItems = $transit[$subKey] ?? [];
+                      if (!$colItems) {
+                          continue;
+                      }
+                    ?>
+                      <div class="zone-transit-col">
+                        <h3><?= h($subLabel) ?></h3>
+                        <ul class="zone-place-list">
+                          <?php foreach ($colItems as $place): ?>
+                            <li class="zone-place">
+                              <p class="zone-place__name"><?= h((string) $place['name']) ?></p>
+                              <div class="zone-pills">
+                                <?php if ($place['distance_m'] !== null && $place['distance_m'] !== ''): ?>
+                                  <span class="zone-pill"><?= rentti_zone_icon_svg('pin', 'zone-pill__icon') ?><?= (int) $place['distance_m'] ?> mt.</span>
+                                <?php endif; ?>
+                                <?php if ($place['walk_min'] !== null && $place['walk_min'] !== ''): ?>
+                                  <span class="zone-pill"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= (int) $place['walk_min'] ?> min.</span>
+                                <?php endif; ?>
+                                <?php if ($place['drive_min'] !== null && $place['drive_min'] !== ''): ?>
+                                  <span class="zone-pill"><?= rentti_zone_icon_svg('car', 'zone-pill__icon') ?><?= (int) $place['drive_min'] ?> min.</span>
+                                <?php endif; ?>
+                              </div>
+                            </li>
+                          <?php endforeach; ?>
+                        </ul>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                <?php else: ?>
+                  <ul class="zone-place-list zone-place-list--grid">
+                    <?php foreach ($items as $place): ?>
+                      <li class="zone-place">
+                        <p class="zone-place__name"><?= h((string) $place['name']) ?></p>
+                        <div class="zone-pills">
+                          <?php if ($place['distance_m'] !== null && $place['distance_m'] !== ''): ?>
+                            <span class="zone-pill"><?= rentti_zone_icon_svg('pin', 'zone-pill__icon') ?><?= (int) $place['distance_m'] ?> mt.</span>
+                          <?php endif; ?>
+                          <?php if ($place['walk_min'] !== null && $place['walk_min'] !== ''): ?>
+                            <span class="zone-pill"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= (int) $place['walk_min'] ?> min.</span>
+                          <?php endif; ?>
+                          <?php if ($place['drive_min'] !== null && $place['drive_min'] !== ''): ?>
+                            <span class="zone-pill"><?= rentti_zone_icon_svg('car', 'zone-pill__icon') ?><?= (int) $place['drive_min'] ?> min.</span>
+                          <?php endif; ?>
+                        </div>
+                      </li>
+                    <?php endforeach; ?>
+                  </ul>
+                <?php endif; ?>
+              </div>
+            <?php $firstPanel = false; endforeach; ?>
+          </section>
+          <script>
+            (function () {
+              const root = document.querySelector('[data-zone-info]');
+              if (!root) return;
+              const tabs = [...root.querySelectorAll('[data-zone-tab]')];
+              const panels = [...root.querySelectorAll('[data-zone-panel]')];
+              tabs.forEach(btn => {
+                btn.addEventListener('click', () => {
+                  const key = btn.getAttribute('data-zone-tab');
+                  tabs.forEach(t => {
+                    const on = t === btn;
+                    t.classList.toggle('is-active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                  });
+                  panels.forEach(p => {
+                    const on = p.getAttribute('data-zone-panel') === key;
+                    p.classList.toggle('is-active', on);
+                    p.hidden = !on;
+                  });
+                });
+              });
+            })();
+          </script>
+        <?php endif; ?>
+
         <?php if (!empty($property['show_map']) && $property['lat'] !== null && $property['lng'] !== null): ?>
           <section class="detail-section">
             <h2>Ubicación</h2>

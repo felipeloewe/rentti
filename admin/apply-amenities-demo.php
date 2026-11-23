@@ -36,6 +36,7 @@ if ($property['parking_covered'] === null || (int) $property['parking_covered'] 
     $property['parking_covered'] = 1;
 }
 rentti_save_property($property);
+rentti_replace_nearby((int) $property['id'], rentti_demo_nearby_points());
 
-rentti_flash('ok', 'Amenities de referencia aplicados a ' . $property['code']);
-rentti_redirect('/admin/property-edit.php?id=' . (int) $property['id'] . '&step=3');
+rentti_flash('ok', 'Amenities + zona de referencia aplicados a ' . $property['code']);
+rentti_redirect('/admin/property-edit.php?id=' . (int) $property['id'] . '&step=2');

@@ -65,6 +65,9 @@ if (rentti_request_is_post()) {
         $errors = rentti_validate_property($updated);
         if (!$errors) {
             rentti_save_property($updated);
+            if (!empty($_POST['nearby_editor'])) {
+                rentti_replace_nearby($id, rentti_nearby_from_request($_POST));
+            }
             $next = (int) ($_POST['next_step'] ?? $step);
             $next = max(1, min(6, $next));
             rentti_flash('ok', 'Guardado.');
@@ -75,6 +78,7 @@ if (rentti_request_is_post()) {
 }
 
 $photos = rentti_list_photos($id);
+$nearbyPoints = rentti_list_nearby($id);
 $steps = [
     1 => 'Tipo y arriendo',
     2 => 'Ubicación',
@@ -206,6 +210,61 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
         <div class="check-row">
           <label><input type="checkbox" name="show_map" value="1" <?= !empty($property['show_map']) ? 'checked' : '' ?> /> Mostrar mapa en ficha pública</label>
         </div>
+
+        <section class="amenity-block" id="zona-editor">
+          <h3 class="amenity-block__title">Información de la zona</h3>
+          <p class="hint">Puntos cercanos para la ficha pública (tabs). Distancia en metros; caminata y auto en minutos.</p>
+          <input type="hidden" name="nearby_editor" value="1" />
+          <div class="nearby-table-wrap">
+            <table class="nearby-table" id="nearby-table">
+              <thead>
+                <tr>
+                  <th>Tab</th>
+                  <th>Columna</th>
+                  <th>Nombre</th>
+                  <th>mt</th>
+                  <th>caminata</th>
+                  <th>auto</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="nearby-body">
+                <?php
+                $rows = $nearbyPoints ?: [];
+                if (!$rows) {
+                    $rows = [['category' => 'zonas_cercanas', 'subtype' => 'buses', 'name' => '', 'distance_m' => '', 'walk_min' => '', 'drive_min' => '']];
+                }
+                foreach ($rows as $i => $row):
+                ?>
+                  <tr class="nearby-row">
+                    <td>
+                      <select name="nearby[<?= (int) $i ?>][category]" class="nearby-cat">
+                        <?php foreach (rentti_zone_tabs() as $tk => $tmeta): ?>
+                          <option value="<?= h($tk) ?>" <?= ($row['category'] ?? '') === $tk ? 'selected' : '' ?>><?= h($tmeta['label']) ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </td>
+                    <td>
+                      <select name="nearby[<?= (int) $i ?>][subtype]" class="nearby-sub">
+                        <option value="">—</option>
+                        <?php foreach (rentti_zone_subtypes() as $sk => $slabel): ?>
+                          <option value="<?= h($sk) ?>" <?= ($row['subtype'] ?? '') === $sk ? 'selected' : '' ?>><?= h($slabel) ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </td>
+                    <td><input type="text" name="nearby[<?= (int) $i ?>][name]" value="<?= h((string) ($row['name'] ?? '')) ?>" placeholder="Nombre del lugar" /></td>
+                    <td><input type="number" min="0" name="nearby[<?= (int) $i ?>][distance_m]" value="<?= h($row['distance_m'] !== null && $row['distance_m'] !== '' ? (string) $row['distance_m'] : '') ?>" /></td>
+                    <td><input type="number" min="0" name="nearby[<?= (int) $i ?>][walk_min]" value="<?= h($row['walk_min'] !== null && $row['walk_min'] !== '' ? (string) $row['walk_min'] : '') ?>" /></td>
+                    <td><input type="number" min="0" name="nearby[<?= (int) $i ?>][drive_min]" value="<?= h($row['drive_min'] !== null && $row['drive_min'] !== '' ? (string) $row['drive_min'] : '') ?>" /></td>
+                    <td><button type="button" class="btn btn--ghost btn--small nearby-remove" title="Quitar">×</button></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn--ghost btn--small" id="nearby-add" style="margin-top:0.65rem">+ Agregar punto</button>
+        </section>
+
         <script>
           const communes = <?= json_encode(rentti_communes_by_region(), JSON_UNESCAPED_UNICODE) ?>;
           const regionEl = document.getElementById('region');
@@ -218,6 +277,65 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
               return `<option value=\"${c}\"${sel}>${c}</option>`;
             }).join('');
           });
+
+          (function nearbyEditor() {
+            const body = document.getElementById('nearby-body');
+            const addBtn = document.getElementById('nearby-add');
+            if (!body || !addBtn) return;
+            const tabOpts = <?= json_encode(rentti_zone_tabs(), JSON_UNESCAPED_UNICODE) ?>;
+            const subOpts = <?= json_encode(rentti_zone_subtypes(), JSON_UNESCAPED_UNICODE) ?>;
+
+            function reindex() {
+              [...body.querySelectorAll('.nearby-row')].forEach((tr, i) => {
+                tr.querySelectorAll('[name]').forEach(el => {
+                  el.name = el.name.replace(/nearby\[\d+]/, 'nearby[' + i + ']');
+                });
+              });
+            }
+            function syncSubtype(tr) {
+              const cat = tr.querySelector('.nearby-cat');
+              const sub = tr.querySelector('.nearby-sub');
+              if (!cat || !sub) return;
+              const on = cat.value === 'zonas_cercanas';
+              sub.disabled = !on;
+              if (!on) sub.value = '';
+            }
+            body.addEventListener('change', (e) => {
+              if (e.target.classList.contains('nearby-cat')) {
+                syncSubtype(e.target.closest('.nearby-row'));
+              }
+            });
+            body.addEventListener('click', (e) => {
+              if (e.target.classList.contains('nearby-remove')) {
+                const rows = body.querySelectorAll('.nearby-row');
+                if (rows.length <= 1) {
+                  const tr = rows[0];
+                  tr.querySelectorAll('input').forEach(i => i.value = '');
+                  return;
+                }
+                e.target.closest('.nearby-row').remove();
+                reindex();
+              }
+            });
+            body.querySelectorAll('.nearby-row').forEach(syncSubtype);
+            addBtn.addEventListener('click', () => {
+              const i = body.querySelectorAll('.nearby-row').length;
+              const tr = document.createElement('tr');
+              tr.className = 'nearby-row';
+              const tabHtml = Object.entries(tabOpts).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+              const subHtml = '<option value="">—</option>' + Object.entries(subOpts).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+              tr.innerHTML = `
+                <td><select name="nearby[${i}][category]" class="nearby-cat">${tabHtml}</select></td>
+                <td><select name="nearby[${i}][subtype]" class="nearby-sub">${subHtml}</select></td>
+                <td><input type="text" name="nearby[${i}][name]" placeholder="Nombre del lugar" /></td>
+                <td><input type="number" min="0" name="nearby[${i}][distance_m]" /></td>
+                <td><input type="number" min="0" name="nearby[${i}][walk_min]" /></td>
+                <td><input type="number" min="0" name="nearby[${i}][drive_min]" /></td>
+                <td><button type="button" class="btn btn--ghost btn--small nearby-remove" title="Quitar">×</button></td>`;
+              body.appendChild(tr);
+              syncSubtype(tr);
+            });
+          })();
         </script>
         <?php rentti_hidden_rest($property, ['region','commune','sector','referential_address','street','street_number','unit','lat','lng','show_map']); ?>
 

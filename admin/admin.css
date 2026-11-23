@@ -445,3 +445,52 @@ table.props tr:last-child td { border-bottom: 0; }
 .amenity-tile:hover .amenity-tile__face {
   border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-line-strong));
 }
+
+/* Nearby points editor */
+.nearby-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: 0.85rem;
+  background: #fff;
+}
+.nearby-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+.nearby-table th {
+  text-align: left;
+  padding: 0.55rem 0.5rem;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.nearby-table td {
+  padding: 0.4rem 0.35rem;
+  border-top: 1px solid var(--color-line);
+  vertical-align: middle;
+}
+.nearby-table select,
+.nearby-table input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.45rem;
+  font: inherit;
+  background: #fff;
+}
+.nearby-table td:nth-child(4),
+.nearby-table td:nth-child(5),
+.nearby-table td:nth-child(6) {
+  width: 4.5rem;
+}
+.nearby-table td:last-child {
+  width: 2.5rem;
+  text-align: center;
+}
+.btn--small {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.8rem;
+}
