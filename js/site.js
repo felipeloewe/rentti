@@ -127,4 +127,46 @@
     sync();
     start();
   }
+
+  const oportRoot = document.querySelector("[data-oportunidades]");
+  if (oportRoot) {
+    const cards = [...oportRoot.querySelectorAll("[data-oport-card]")];
+    const prevBtn = oportRoot.querySelector("[data-oport-prev]");
+    const nextBtn = oportRoot.querySelector("[data-oport-next]");
+    const viewport = oportRoot.querySelector("[data-oport-viewport]");
+    let oportIndex = Math.max(
+      0,
+      cards.findIndex((card) => card.classList.contains("is-active"))
+    );
+
+    const syncOport = () => {
+      cards.forEach((card, i) => {
+        const active = i === oportIndex;
+        card.classList.toggle("is-active", active);
+        card.setAttribute("aria-hidden", active ? "false" : "true");
+      });
+      const activeCard = cards[oportIndex];
+      if (
+        activeCard &&
+        viewport &&
+        window.matchMedia("(max-width: 820px)").matches
+      ) {
+        activeCard.scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          inline: "start",
+          block: "nearest",
+        });
+      }
+    };
+
+    const goOport = (next) => {
+      if (!cards.length) return;
+      oportIndex = ((next % cards.length) + cards.length) % cards.length;
+      syncOport();
+    };
+
+    prevBtn?.addEventListener("click", () => goOport(oportIndex - 1));
+    nextBtn?.addEventListener("click", () => goOport(oportIndex + 1));
+    syncOport();
+  }
 })();
