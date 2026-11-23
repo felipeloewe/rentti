@@ -49,10 +49,25 @@ function rentti_property_defaults(): array
         'parking_covered' => null,
         'parking_open' => null,
         'storage' => 0,
+        'storage_price_uf' => null,
+        'parking_price_uf' => null,
+        'parking_note' => '',
         'furnished' => 0,
         'pets_allowed' => 0,
         'pool' => 0,
         'condominium' => 0,
+        'feat_termopanel' => 0,
+        'feat_cocina_equipada' => 0,
+        'feat_gres_porcelanato' => 0,
+        'feat_revestimiento_eifs' => 0,
+        'feat_piso_fotolaminado' => 0,
+        'feat_cocina_integrada' => 0,
+        'amenity_salon_gourmet' => 0,
+        'amenity_conserjeria' => 0,
+        'amenity_ecommerce' => 0,
+        'amenity_bicicletero' => 0,
+        'amenity_gimnasio' => 0,
+        'amenity_cowork' => 0,
         'orientation' => '',
         'heating_type' => '',
         'title' => '',
@@ -164,10 +179,19 @@ function rentti_property_from_request(array $src, ?array $existing = null): arra
     $base['parking_covered'] = rentti_nullable_int($src['parking_covered'] ?? null);
     $base['parking_open'] = rentti_nullable_int($src['parking_open'] ?? null);
     $base['storage'] = rentti_bool_int($src['storage'] ?? 0);
+    $base['storage_price_uf'] = rentti_nullable_float($src['storage_price_uf'] ?? null);
+    $base['parking_price_uf'] = rentti_nullable_float($src['parking_price_uf'] ?? null);
+    $base['parking_note'] = trim((string) ($src['parking_note'] ?? ''));
     $base['furnished'] = rentti_bool_int($src['furnished'] ?? 0);
     $base['pets_allowed'] = rentti_bool_int($src['pets_allowed'] ?? 0);
     $base['pool'] = rentti_bool_int($src['pool'] ?? 0);
     $base['condominium'] = rentti_bool_int($src['condominium'] ?? 0);
+    foreach (rentti_feature_bool_keys() as $featKey) {
+        $base[$featKey] = rentti_bool_int($src[$featKey] ?? 0);
+    }
+    foreach (rentti_common_amenity_keys() as $amenityKey) {
+        $base[$amenityKey] = rentti_bool_int($src[$amenityKey] ?? 0);
+    }
     $base['orientation'] = trim((string) ($src['orientation'] ?? ''));
     $base['heating_type'] = trim((string) ($src['heating_type'] ?? ''));
     $base['title'] = trim((string) ($src['title'] ?? ''));
@@ -224,8 +248,14 @@ function rentti_save_property(array $p): int
         'street', 'street_number', 'unit', 'referential_address', 'lat', 'lng', 'show_map',
         'bedrooms', 'bathrooms', 'suites', 'living_rooms', 'useful_area', 'total_area',
         'land_area', 'built_area', 'terrace_area', 'floor_number', 'year_built', 'floors',
-        'elevators', 'parking_covered', 'parking_open', 'storage', 'furnished',
-        'pets_allowed', 'pool', 'condominium', 'orientation', 'heating_type',
+        'elevators', 'parking_covered', 'parking_open', 'storage', 'storage_price_uf',
+        'parking_price_uf', 'parking_note', 'furnished',
+        'pets_allowed', 'pool', 'condominium',
+        'feat_termopanel', 'feat_cocina_equipada', 'feat_gres_porcelanato',
+        'feat_revestimiento_eifs', 'feat_piso_fotolaminado', 'feat_cocina_integrada',
+        'amenity_salon_gourmet', 'amenity_conserjeria', 'amenity_ecommerce',
+        'amenity_bicicletero', 'amenity_gimnasio', 'amenity_cowork',
+        'orientation', 'heating_type',
         'title', 'description', 'visit_instructions', 'internal_notes',
         'owner_doc_type', 'owner_doc_number', 'owner_first_name', 'owner_last_name',
         'owner_maternal_last_name', 'owner_email', 'owner_phone', 'owner_mobile',

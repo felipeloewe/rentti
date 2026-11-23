@@ -223,7 +223,7 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
 
       <?php elseif ($step === 3): ?>
         <h2>3. Características</h2>
-        <p class="hint">Subconjunto MVP para Casa / Departamento.</p>
+        <p class="hint">Números básicos + amenities con icono (menos texto).</p>
         <div class="grid-3">
           <?php
           $nums = [
@@ -270,12 +270,93 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
             </select>
           </div>
         </div>
-        <div class="check-row">
-          <?php foreach (['furnished' => 'Amoblado', 'pets_allowed' => 'Permiten mascotas', 'storage' => 'Bodega', 'pool' => 'Piscina', 'condominium' => 'En condominio'] as $k => $lab): ?>
-            <label><input type="checkbox" name="<?= $k ?>" value="1" <?= !empty($property[$k]) ? 'checked' : '' ?> /> <?= h($lab) ?></label>
-          <?php endforeach; ?>
-        </div>
-        <?php rentti_hidden_rest($property, array_merge(array_keys($nums), ['floor_number','orientation','heating_type','furnished','pets_allowed','storage','pool','condominium'])); ?>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Características</h3>
+          <div class="amenity-picker" role="group" aria-label="Características de la unidad">
+            <?php foreach (rentti_unit_features() as $k => $meta): ?>
+              <label class="amenity-tile">
+                <input type="checkbox" name="<?= h($k) ?>" value="1" <?= !empty($property[$k]) ? 'checked' : '' ?> />
+                <span class="amenity-tile__face">
+                  <?= rentti_amenity_icon_svg($meta['icon']) ?>
+                  <span class="amenity-tile__label"><?= h($meta['label']) ?></span>
+                </span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </section>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Estacionamiento</h3>
+          <div class="grid-2">
+            <div class="field">
+              <label for="parking_price_uf">Precio (UF, opcional)</label>
+              <input id="parking_price_uf" name="parking_price_uf" type="number" min="0" step="any" value="<?= h($property['parking_price_uf'] !== null && $property['parking_price_uf'] !== '' ? (string) $property['parking_price_uf'] : '') ?>" placeholder="ej. 390" />
+            </div>
+            <div class="field">
+              <label for="parking_note">Nota / exclusividad</label>
+              <input id="parking_note" name="parking_note" type="text" value="<?= h((string) ($property['parking_note'] ?? '')) ?>" placeholder="Exclusivo para deptos. 2D" />
+            </div>
+          </div>
+        </section>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Bodega</h3>
+          <div class="amenity-picker amenity-picker--compact" role="group" aria-label="Bodega">
+            <label class="amenity-tile">
+              <input type="checkbox" name="storage" value="1" <?= !empty($property['storage']) ? 'checked' : '' ?> />
+              <span class="amenity-tile__face">
+                <?= rentti_amenity_icon_svg('storage') ?>
+                <span class="amenity-tile__label">Incluye bodega</span>
+              </span>
+            </label>
+          </div>
+          <div class="field" style="max-width:14rem;margin-top:0.75rem">
+            <label for="storage_price_uf">Precio (UF, opcional)</label>
+            <input id="storage_price_uf" name="storage_price_uf" type="number" min="0" step="any" value="<?= h($property['storage_price_uf'] !== null && $property['storage_price_uf'] !== '' ? (string) $property['storage_price_uf'] : '') ?>" placeholder="ej. 90" />
+          </div>
+        </section>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Áreas comunes</h3>
+          <div class="amenity-picker" role="group" aria-label="Áreas comunes">
+            <?php foreach (rentti_common_amenities() as $k => $meta): ?>
+              <label class="amenity-tile">
+                <input type="checkbox" name="<?= h($k) ?>" value="1" <?= !empty($property[$k]) ? 'checked' : '' ?> />
+                <span class="amenity-tile__face">
+                  <?= rentti_amenity_icon_svg($meta['icon']) ?>
+                  <span class="amenity-tile__label"><?= h($meta['label']) ?></span>
+                </span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </section>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Otros</h3>
+          <div class="amenity-picker" role="group" aria-label="Otros">
+            <?php foreach (rentti_extra_flags() as $k => $meta): ?>
+              <label class="amenity-tile">
+                <input type="checkbox" name="<?= h($k) ?>" value="1" <?= !empty($property[$k]) ? 'checked' : '' ?> />
+                <span class="amenity-tile__face">
+                  <?= rentti_amenity_icon_svg($meta['icon']) ?>
+                  <span class="amenity-tile__label"><?= h($meta['label']) ?></span>
+                </span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </section>
+
+        <?php
+          $amenityVisible = array_merge(
+              array_keys($nums),
+              ['floor_number', 'orientation', 'heating_type', 'storage', 'storage_price_uf', 'parking_price_uf', 'parking_note'],
+              rentti_feature_bool_keys(),
+              rentti_common_amenity_keys(),
+              array_keys(rentti_extra_flags())
+          );
+          rentti_hidden_rest($property, $amenityVisible);
+        ?>
 
       <?php elseif ($step === 4): ?>
         <h2>4. Textos</h2>
@@ -459,7 +540,11 @@ function rentti_hidden_rest(array $property, array $visible): void
             continue;
         }
         // checkboxes: only emit when truthy so unchecked stays off when visible elsewhere
-        $boolKeys = ['featured','seasonal_rent','show_map','storage','furnished','pets_allowed','pool','condominium'];
+        $boolKeys = array_merge(
+            ['featured', 'seasonal_rent', 'show_map', 'storage', 'furnished', 'pets_allowed', 'pool', 'condominium'],
+            rentti_feature_bool_keys(),
+            rentti_common_amenity_keys()
+        );
         if (in_array($key, $boolKeys, true)) {
             if (!empty($value)) {
                 echo '<input type="hidden" name="' . h($key) . '" value="1" />' . "\n";

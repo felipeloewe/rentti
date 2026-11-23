@@ -3,9 +3,43 @@ declare(strict_types=1);
 require_once __DIR__ . '/../lib/bootstrap.php';
 
 $pdo = rentti_db();
+$forceAmenities = in_array('--force-amenities', $argv ?? [], true);
+
 $existing = (int) $pdo->query("SELECT COUNT(*) FROM properties WHERE status = 'publicada'")->fetchColumn();
-if ($existing > 0) {
+if ($existing > 0 && !$forceAmenities) {
     echo "Already have published properties ($existing). Skip seed.\n";
+    echo "Tip: php scripts/seed_demo.php --force-amenities  (fills Felipe amenity set on first published)\n";
+    exit(0);
+}
+
+if ($forceAmenities && $existing > 0) {
+    $row = $pdo->query("SELECT id, code FROM properties WHERE status = 'publicada' ORDER BY id ASC LIMIT 1")->fetch();
+    if (!$row) {
+        echo "No published property to update.\n";
+        exit(1);
+    }
+    $id = (int) $row['id'];
+    $p = rentti_get_property($id);
+    if (!$p) {
+        echo "Property not found.\n";
+        exit(1);
+    }
+    foreach (array_keys(rentti_unit_features()) as $k) {
+        $p[$k] = 1;
+    }
+    foreach (array_keys(rentti_common_amenities()) as $k) {
+        $p[$k] = 1;
+    }
+    $p['storage'] = 1;
+    $p['storage_price_uf'] = 90;
+    $p['parking_price_uf'] = 390;
+    $p['parking_note'] = 'Exclusivo para deptos. 2D';
+    $p['furnished'] = 1;
+    $p['pets_allowed'] = 1;
+    $p['condominium'] = 1;
+    $p['parking_covered'] = max(1, (int) ($p['parking_covered'] ?? 0));
+    rentti_save_property($p);
+    echo "Updated amenities on id=$id code={$p['code']}\n";
     exit(0);
 }
 
@@ -25,9 +59,20 @@ $p['bedrooms'] = 2;
 $p['bathrooms'] = 2;
 $p['useful_area'] = 68;
 $p['total_area'] = 75;
+$p['parking_covered'] = 1;
 $p['furnished'] = 1;
 $p['pets_allowed'] = 1;
 $p['condominium'] = 1;
+$p['storage'] = 1;
+$p['storage_price_uf'] = 90;
+$p['parking_price_uf'] = 390;
+$p['parking_note'] = 'Exclusivo para deptos. 2D';
+foreach (array_keys(rentti_unit_features()) as $k) {
+    $p[$k] = 1;
+}
+foreach (array_keys(rentti_common_amenities()) as $k) {
+    $p[$k] = 1;
+}
 $p['title'] = 'Departamento en arriendo en Providencia';
 $p['description'] = "Luminoso departamento de 2 dormitorios en Providencia, cerca del metro Manuel Montt.\nLiving-comedor conectado, cocina equipada y terraza.";
 $p['visit_instructions'] = 'Coordinar con corredor RENTTI.';

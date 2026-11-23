@@ -76,12 +76,110 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
           <?php if ($property['bathrooms'] !== null): ?><li><?= (int) $property['bathrooms'] ?> baños</li><?php endif; ?>
           <?php if ($property['useful_area'] !== null): ?><li><?= h((string) $property['useful_area']) ?> m² útiles</li><?php endif; ?>
           <?php if ($property['built_area'] !== null): ?><li><?= h((string) $property['built_area']) ?> m² construidos</li><?php endif; ?>
-          <?php if (!empty($property['furnished'])): ?><li>Amoblado</li><?php endif; ?>
-          <?php if (!empty($property['pets_allowed'])): ?><li>Mascotas OK</li><?php endif; ?>
-          <?php if (!empty($property['pool'])): ?><li>Piscina</li><?php endif; ?>
-          <?php if (!empty($property['condominium'])): ?><li>Condominio</li><?php endif; ?>
-          <?php if (!empty($property['storage'])): ?><li>Bodega</li><?php endif; ?>
         </ul>
+
+        <?php
+          $unitFeatures = rentti_active_unit_features($property);
+          $commonAmenities = rentti_active_common_amenities($property);
+          $extraFlags = [];
+          foreach (rentti_extra_flags() as $ek => $emeta) {
+              if (!empty($property[$ek])) {
+                  $extraFlags[$ek] = $emeta;
+              }
+          }
+          $hasParking = $property['parking_price_uf'] !== null && $property['parking_price_uf'] !== ''
+              || ($property['parking_note'] ?? '') !== ''
+              || ($property['parking_covered'] !== null && (int) $property['parking_covered'] > 0)
+              || ($property['parking_open'] !== null && (int) $property['parking_open'] > 0);
+          $hasStorage = !empty($property['storage'])
+              || ($property['storage_price_uf'] !== null && $property['storage_price_uf'] !== '');
+        ?>
+
+        <?php if ($unitFeatures): ?>
+          <section class="detail-section detail-amenities">
+            <h2>Características</h2>
+            <ul class="feature-check-list">
+              <?php foreach ($unitFeatures as $feat): ?>
+                <li>
+                  <span class="feature-check" aria-hidden="true"><?= rentti_amenity_icon_svg('check', 'feature-check__svg') ?></span>
+                  <span class="feature-check-list__text">
+                    <strong><?= h($feat['label']) ?></strong>
+                    <?php if ($feat['hint'] !== ''): ?>
+                      <span class="feature-check-list__hint"><?= h($feat['hint']) ?></span>
+                    <?php endif; ?>
+                  </span>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </section>
+        <?php endif; ?>
+
+        <?php if ($hasParking): ?>
+          <section class="detail-section detail-amenities">
+            <h2>Estacionamiento</h2>
+            <ul class="feature-check-list">
+              <li>
+                <span class="feature-check" aria-hidden="true"><?= rentti_amenity_icon_svg('parking', 'feature-check__svg') ?></span>
+                <span class="feature-check-list__text">
+                  <?php if ($property['parking_price_uf'] !== null && $property['parking_price_uf'] !== ''): ?>
+                    <strong><?= h(rentti_format_price((float) $property['parking_price_uf'], 'UF')) ?></strong>
+                  <?php else: ?>
+                    <strong>Disponible</strong>
+                  <?php endif; ?>
+                  <?php if (($property['parking_note'] ?? '') !== ''): ?>
+                    <span class="feature-check-list__hint"><?= h((string) $property['parking_note']) ?></span>
+                  <?php endif; ?>
+                </span>
+              </li>
+            </ul>
+          </section>
+        <?php endif; ?>
+
+        <?php if ($hasStorage): ?>
+          <section class="detail-section detail-amenities">
+            <h2>Bodega</h2>
+            <ul class="feature-check-list">
+              <li>
+                <span class="feature-check" aria-hidden="true"><?= rentti_amenity_icon_svg('storage', 'feature-check__svg') ?></span>
+                <span class="feature-check-list__text">
+                  <?php if ($property['storage_price_uf'] !== null && $property['storage_price_uf'] !== ''): ?>
+                    <strong><?= h(rentti_format_price((float) $property['storage_price_uf'], 'UF')) ?></strong>
+                  <?php else: ?>
+                    <strong>Incluida</strong>
+                  <?php endif; ?>
+                </span>
+              </li>
+            </ul>
+          </section>
+        <?php endif; ?>
+
+        <?php if ($commonAmenities): ?>
+          <section class="detail-section detail-amenities">
+            <h2>Áreas comunes</h2>
+            <ul class="amenity-icon-grid">
+              <?php foreach ($commonAmenities as $amenity): ?>
+                <li>
+                  <?= rentti_amenity_icon_svg($amenity['icon']) ?>
+                  <span><?= h($amenity['label']) ?></span>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </section>
+        <?php endif; ?>
+
+        <?php if ($extraFlags): ?>
+          <section class="detail-section detail-amenities">
+            <h2>Otros</h2>
+            <ul class="amenity-icon-grid amenity-icon-grid--compact">
+              <?php foreach ($extraFlags as $flag): ?>
+                <li>
+                  <?= rentti_amenity_icon_svg($flag['icon']) ?>
+                  <span><?= h($flag['label']) ?></span>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </section>
+        <?php endif; ?>
 
         <?php if ($property['description']): ?>
           <section class="detail-section">

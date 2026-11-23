@@ -59,10 +59,25 @@ function rentti_migrate(PDO $pdo): void
             parking_covered INTEGER,
             parking_open INTEGER,
             storage INTEGER NOT NULL DEFAULT 0,
+            storage_price_uf REAL,
+            parking_price_uf REAL,
+            parking_note TEXT,
             furnished INTEGER NOT NULL DEFAULT 0,
             pets_allowed INTEGER NOT NULL DEFAULT 0,
             pool INTEGER NOT NULL DEFAULT 0,
             condominium INTEGER NOT NULL DEFAULT 0,
+            feat_termopanel INTEGER NOT NULL DEFAULT 0,
+            feat_cocina_equipada INTEGER NOT NULL DEFAULT 0,
+            feat_gres_porcelanato INTEGER NOT NULL DEFAULT 0,
+            feat_revestimiento_eifs INTEGER NOT NULL DEFAULT 0,
+            feat_piso_fotolaminado INTEGER NOT NULL DEFAULT 0,
+            feat_cocina_integrada INTEGER NOT NULL DEFAULT 0,
+            amenity_salon_gourmet INTEGER NOT NULL DEFAULT 0,
+            amenity_conserjeria INTEGER NOT NULL DEFAULT 0,
+            amenity_ecommerce INTEGER NOT NULL DEFAULT 0,
+            amenity_bicicletero INTEGER NOT NULL DEFAULT 0,
+            amenity_gimnasio INTEGER NOT NULL DEFAULT 0,
+            amenity_cowork INTEGER NOT NULL DEFAULT 0,
             orientation TEXT,
             heating_type TEXT,
             title TEXT,
@@ -99,4 +114,36 @@ function rentti_migrate(PDO $pdo): void
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_properties_type ON properties(property_type)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_properties_commune ON properties(commune)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_photos_property ON property_photos(property_id)');
+
+    rentti_ensure_columns($pdo, 'properties', [
+        'storage_price_uf' => 'REAL',
+        'parking_price_uf' => 'REAL',
+        'parking_note' => 'TEXT',
+        'feat_termopanel' => 'INTEGER NOT NULL DEFAULT 0',
+        'feat_cocina_equipada' => 'INTEGER NOT NULL DEFAULT 0',
+        'feat_gres_porcelanato' => 'INTEGER NOT NULL DEFAULT 0',
+        'feat_revestimiento_eifs' => 'INTEGER NOT NULL DEFAULT 0',
+        'feat_piso_fotolaminado' => 'INTEGER NOT NULL DEFAULT 0',
+        'feat_cocina_integrada' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_salon_gourmet' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_conserjeria' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_ecommerce' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_bicicletero' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_gimnasio' => 'INTEGER NOT NULL DEFAULT 0',
+        'amenity_cowork' => 'INTEGER NOT NULL DEFAULT 0',
+    ]);
+}
+
+function rentti_ensure_columns(PDO $pdo, string $table, array $columns): void
+{
+    $existing = [];
+    foreach ($pdo->query("PRAGMA table_info($table)") as $row) {
+        $existing[(string) $row['name']] = true;
+    }
+    foreach ($columns as $name => $definition) {
+        if (isset($existing[$name])) {
+            continue;
+        }
+        $pdo->exec("ALTER TABLE $table ADD COLUMN $name $definition");
+    }
 }
