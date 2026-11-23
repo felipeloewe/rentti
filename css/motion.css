@@ -76,7 +76,8 @@
     scroll-behavior: auto;
   }
 
-  .hero__media img {
+  .hero__slide,
+  .hero__slide.is-active {
     animation: none;
     transform: none;
   }

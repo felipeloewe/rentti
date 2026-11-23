@@ -35,16 +35,70 @@
     </header>
 
     <main id="main">
-      <section class="hero" id="buscar" aria-labelledby="hero-heading">
+      <section class="hero" id="buscar" aria-labelledby="hero-heading" data-hero-banner>
         <div class="hero__media" aria-hidden="true">
-          <img
-            src="assets/hero/apartment.jpg"
-            alt=""
-            width="2400"
-            height="1786"
-            decoding="async"
-            fetchpriority="high"
-          />
+          <div class="hero__slides" data-hero-slides>
+            <img
+              class="hero__slide is-active"
+              src="assets/hero/distrito-street.jpg"
+              alt=""
+              width="1280"
+              height="720"
+              decoding="async"
+              fetchpriority="high"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/hero/tarapaca-crosswalk.jpg"
+              alt=""
+              width="1280"
+              height="720"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/hero/apartment.jpg"
+              alt=""
+              width="2400"
+              height="1786"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/living.jpg"
+              alt=""
+              width="1600"
+              height="1068"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/terrace.jpg"
+              alt=""
+              width="1600"
+              height="1067"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/kitchen.jpg"
+              alt=""
+              width="1600"
+              height="1088"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+          </div>
         </div>
         <div class="hero__scrim" aria-hidden="true"></div>
 
@@ -104,6 +158,15 @@
               </div>
             </form>
           </div>
+        </div>
+
+        <div class="hero__banner-nav" data-hero-nav>
+          <div
+            class="hero__dots"
+            role="tablist"
+            aria-label="Fotos del banner"
+            data-hero-dots
+          ></div>
         </div>
       </section>
 
