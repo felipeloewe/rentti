@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RENTTI — Departamentos y casas en arriendo y venta</title>
+    <meta
+      name="description"
+      content="RENTTI: encuentra tu próximo hogar en Chile. Busca arriendo o compra, explora proyectos y contacta con confianza."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/hero.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/oportunidades.css" />
+    <link rel="stylesheet" href="css/motion.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+
+    <header class="site-header">
+      <a class="site-header__brand" href="/">RENTTI</a>
+      <nav class="site-header__nav" aria-label="Principal">
+        <a href="#buscar">Buscar</a>
+        <a href="#proyectos">Proyectos</a>
+        <a href="#como">Cómo funciona</a>
+        <a href="#publicar">Publicar</a>
+      </nav>
+      <a class="btn site-header__cta" href="#publicar">Publicar</a>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="buscar" aria-labelledby="hero-heading" data-hero-banner>
+        <div class="hero__media" aria-hidden="true">
+          <div class="hero__slides" data-hero-slides>
+            <img
+              class="hero__slide is-active"
+              src="assets/hero/distrito-street.jpg"
+              alt=""
+              width="1280"
+              height="720"
+              decoding="async"
+              fetchpriority="high"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/hero/tarapaca-crosswalk.jpg"
+              alt=""
+              width="1280"
+              height="720"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/hero/apartment.jpg"
+              alt=""
+              width="2400"
+              height="1786"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/living.jpg"
+              alt=""
+              width="1600"
+              height="1068"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/terrace.jpg"
+              alt=""
+              width="1600"
+              height="1067"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+            <img
+              class="hero__slide"
+              src="assets/listings/kitchen.jpg"
+              alt=""
+              width="1600"
+              height="1088"
+              decoding="async"
+              loading="lazy"
+              data-hero-slide
+            />
+          </div>
+        </div>
+        <div class="hero__scrim" aria-hidden="true"></div>
+
+        <div class="hero__content">
+          <p class="hero__brand">RENTTI</p>
+          <h1 id="hero-heading" class="hero__title">
+            Busca aquí tu próximo hogar
+          </h1>
+          <p class="hero__support">
+            Arriendo o compra en Chile, con resultados claros y contacto directo.
+          </p>
+
+          <div class="hero__actions">
+            <form class="search" data-search-form action="#resultados" method="get">
+              <input type="hidden" name="mode" value="arriendo" data-mode-input />
+              <div class="search__modes" role="group" aria-label="Tipo de búsqueda">
+                <button
+                  type="button"
+                  class="search__mode is-active"
+                  data-search-mode="arriendo"
+                  aria-pressed="true"
+                >
+                  Arrendar
+                </button>
+                <button
+                  type="button"
+                  class="search__mode"
+                  data-search-mode="compra"
+                  aria-pressed="false"
+                >
+                  Comprar
+                </button>
+              </div>
+              <div class="search__row">
+                <div class="search__field">
+                  <label for="comuna">Comuna o ciudad</label>
+                  <input
+                    id="comuna"
+                    name="comuna"
+                    type="search"
+                    placeholder="Providencia, Ñuñoa, Viña…"
+                    autocomplete="address-level2"
+                  />
+                </div>
+                <div class="search__field">
+                  <label for="tipo">Tipo</label>
+                  <select id="tipo" name="tipo">
+                    <option value="departamento">Departamento</option>
+                    <option value="casa">Casa</option>
+                    <option value="oficina">Oficina</option>
+                    <option value="local">Local comercial</option>
+                  </select>
+                </div>
+                <button class="btn btn--primary search__submit" type="submit">
+                  Buscar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="hero__banner-nav" data-hero-nav>
+          <div
+            class="hero__dots"
+            role="tablist"
+            aria-label="Fotos del banner"
+            data-hero-dots
+          ></div>
+        </div>
+      </section>
+
+      <p id="resultados" class="search-status" role="status" aria-live="polite" hidden></p>
+
+      <section
+        class="section section--oportunidades"
+        id="oportunidades"
+        aria-labelledby="oportunidades-title"
+        data-oportunidades
+      >
+        <div class="section__inner reveal">
+          <h2 id="oportunidades-title" class="oportunidades__title">
+            Oportunidades únicas, aquí
+          </h2>
+
+          <div class="oportunidades__stage">
+            <button
+              type="button"
+              class="oportunidades__arrow"
+              data-oport-prev
+              aria-label="Proyecto anterior"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+
+            <div class="oportunidades__viewport" data-oport-viewport>
+              <article class="oport-card is-active" data-oport-card aria-hidden="false">
+                <div class="oport-card__tall">
+                  <img
+                    src="assets/listings/facade.jpg"
+                    alt="Fachada de Residencias Parque Oriente"
+                    width="1600"
+                    height="1063"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="oport-card__mid">
+                  <div class="oport-card__photo">
+                    <img
+                      src="assets/listings/terrace.jpg"
+                      alt="Terraza del proyecto"
+                      width="1600"
+                      height="1067"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div class="oport-card__trait" aria-label="Dormitorios">
+                    <span class="oport-card__trait-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                        <path
+                          d="M3 18V9.5A1.5 1.5 0 0 1 4.5 8H10a3 3 0 0 1 3 3v1h5.5A1.5 1.5 0 0 1 20 13.5V18"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M3 18h18M7 8V6.5A1.5 1.5 0 0 1 8.5 5h2A1.5 1.5 0 0 1 12 6.5V8"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <span class="oport-card__trait-value">2–3</span>
+                    <span class="oport-card__trait-label">dorms</span>
+                  </div>
+                </div>
+                <div class="oport-card__offer">
+                  <span class="oport-card__badge">Entrega ~ 18 meses</span>
+                  <h3 class="oport-card__name">Residencias Parque Oriente</h3>
+                  <p class="oport-card__place">Las Condes, Santiago</p>
+                  <div class="oport-card__price">
+                    <span class="oport-card__desde">Desde*</span>
+                    <p class="oport-card__amount">UF 6.420</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="oport-card" data-oport-card aria-hidden="true">
+                <div class="oport-card__tall">
+                  <img
+                    src="assets/listings/living.jpg"
+                    alt="Living de Edificio Irarrázaval 2100"
+                    width="1600"
+                    height="1068"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="oport-card__mid">
+                  <div class="oport-card__photo">
+                    <img
+                      src="assets/listings/kitchen.jpg"
+                      alt="Cocina del proyecto"
+                      width="1600"
+                      height="1088"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div class="oport-card__trait" aria-label="Dormitorios">
+                    <span class="oport-card__trait-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                        <path
+                          d="M3 18V9.5A1.5 1.5 0 0 1 4.5 8H10a3 3 0 0 1 3 3v1h5.5A1.5 1.5 0 0 1 20 13.5V18"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M3 18h18M7 8V6.5A1.5 1.5 0 0 1 8.5 5h2A1.5 1.5 0 0 1 12 6.5V8"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <span class="oport-card__trait-value">1–2</span>
+                    <span class="oport-card__trait-label">dorms</span>
+                  </div>
+                </div>
+                <div class="oport-card__offer">
+                  <span class="oport-card__badge">Entrega inmediata</span>
+                  <h3 class="oport-card__name">Edificio Irarrázaval 2100</h3>
+                  <p class="oport-card__place">Ñuñoa, Santiago</p>
+                  <div class="oport-card__price">
+                    <span class="oport-card__desde">Desde*</span>
+                    <p class="oport-card__amount">UF 3.890</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="oport-card" data-oport-card aria-hidden="true">
+                <div class="oport-card__tall">
+                  <img
+                    src="assets/hero/apartment.jpg"
+                    alt="Edificio Aires Manuel Montt"
+                    width="2400"
+                    height="1786"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="oport-card__mid">
+                  <div class="oport-card__photo">
+                    <img
+                      src="assets/listings/facade.jpg"
+                      alt="Vista del entorno"
+                      width="1600"
+                      height="1063"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div class="oport-card__trait" aria-label="Dormitorios">
+                    <span class="oport-card__trait-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                        <path
+                          d="M3 18V9.5A1.5 1.5 0 0 1 4.5 8H10a3 3 0 0 1 3 3v1h5.5A1.5 1.5 0 0 1 20 13.5V18"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M3 18h18M7 8V6.5A1.5 1.5 0 0 1 8.5 5h2A1.5 1.5 0 0 1 12 6.5V8"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <span class="oport-card__trait-value">1–3</span>
+                    <span class="oport-card__trait-label">dorms</span>
+                  </div>
+                </div>
+                <div class="oport-card__offer">
+                  <span class="oport-card__badge">Entrega ~ 12 meses</span>
+                  <h3 class="oport-card__name">Aires Manuel Montt</h3>
+                  <p class="oport-card__place">Providencia, Santiago</p>
+                  <div class="oport-card__price">
+                    <span class="oport-card__desde">Desde*</span>
+                    <p class="oport-card__amount">UF 5.150</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <button
+              type="button"
+              class="oportunidades__arrow"
+              data-oport-next
+              aria-label="Proyecto siguiente"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <p class="oportunidades__note">
+            *Estos valores son aproximados. Todo depende de la propiedad y el plan de pagos que elijas.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--white" id="proyectos" aria-labelledby="proyectos-title">
+        <div class="section__inner reveal">
+          <div class="section__head">
+            <div>
+              <p class="section__eyebrow">Selección</p>
+              <h2 id="proyectos-title" class="section__title">Proyectos destacados</h2>
+              <p class="section__lead">
+                Vivienda nueva y lanzamientos con información clara de tipología y precio.
+              </p>
+            </div>
+            <a class="section__link" href="#buscar">Ver más proyectos</a>
+          </div>
+
+          <div class="rail" aria-label="Proyectos destacados">
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/terrace.jpg" alt="" width="1600" height="1067" loading="lazy" />
+                <span class="listing__tag">Venta nuevo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Las Condes</p>
+                <h3 class="listing__name">Residencias Parque Oriente</h3>
+                <p class="listing__meta">2–3 dorm · 68 a 112 m²</p>
+                <p class="listing__price"><span>Desde</span> UF 6.420</p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/living.jpg" alt="" width="1600" height="1068" loading="lazy" />
+                <span class="listing__tag">Venta nuevo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Ñuñoa</p>
+                <h3 class="listing__name">Edificio Irarrázaval 2100</h3>
+                <p class="listing__meta">1–2 dorm · 42 a 71 m²</p>
+                <p class="listing__price"><span>Desde</span> UF 3.890</p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/kitchen.jpg" alt="" width="1600" height="1088" loading="lazy" />
+                <span class="listing__tag">Venta nuevo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Providencia</p>
+                <h3 class="listing__name">Aires Manuel Montt</h3>
+                <p class="listing__meta">1–3 dorm · 45 a 98 m²</p>
+                <p class="listing__price"><span>Desde</span> UF 5.150</p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/facade.jpg" alt="" width="1600" height="1063" loading="lazy" />
+                <span class="listing__tag">Venta nuevo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Viña del Mar</p>
+                <h3 class="listing__name">Costa Reñaca Norte</h3>
+                <p class="listing__meta">2 dorm · 61 a 84 m²</p>
+                <p class="listing__price"><span>Desde</span> UF 4.780</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="propiedades" aria-labelledby="propiedades-title">
+        <div class="section__inner reveal">
+          <div class="section__head">
+            <div>
+              <p class="section__eyebrow">Mercado</p>
+              <h2 id="propiedades-title" class="section__title">Propiedades destacadas</h2>
+              <p class="section__lead">
+                Una muestra curada para arrendar o comprar, con datos útiles para decidir.
+              </p>
+            </div>
+            <a class="section__link" href="#buscar">Explorar todo</a>
+          </div>
+
+          <div class="rail" aria-label="Propiedades destacadas">
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/living.jpg" alt="" width="1600" height="1068" loading="lazy" />
+                <span class="listing__tag">Arriendo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Providencia</p>
+                <h3 class="listing__name">Depto luminoso cerca de metro</h3>
+                <p class="listing__meta">2 dorm · 2 baños · 78 m²</p>
+                <p class="listing__price">$780.000 <span>/ mes</span></p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/terrace.jpg" alt="" width="1600" height="1067" loading="lazy" />
+                <span class="listing__tag">Venta</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Vitacura</p>
+                <h3 class="listing__name">Casa con jardín y terraza</h3>
+                <p class="listing__meta">4 dorm · 3 baños · 168 m²</p>
+                <p class="listing__price">UF 14.200</p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/kitchen.jpg" alt="" width="1600" height="1088" loading="lazy" />
+                <span class="listing__tag">Arriendo</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">La Florida</p>
+                <h3 class="listing__name">Departamento familiar remodelado</h3>
+                <p class="listing__meta">3 dorm · 2 baños · 92 m²</p>
+                <p class="listing__price">$650.000 <span>/ mes</span></p>
+              </div>
+            </a>
+            <a class="listing" href="#buscar">
+              <div class="listing__media">
+                <img src="assets/listings/facade.jpg" alt="" width="1600" height="1063" loading="lazy" />
+                <span class="listing__tag">Venta</span>
+              </div>
+              <div class="listing__body">
+                <p class="listing__place">Santiago Centro</p>
+                <h3 class="listing__name">Studio céntrico con vista</h3>
+                <p class="listing__meta">1 dorm · 1 baño · 38 m²</p>
+                <p class="listing__price">UF 2.980</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--mint" id="como" aria-labelledby="como-title">
+        <div class="section__inner reveal">
+          <p class="section__eyebrow">Proceso</p>
+          <h2 id="como-title" class="section__title">Encontrar hogar en 3 pasos</h2>
+          <p class="section__lead">
+            Una ruta simple: busca, contacta y decide con información a la mano.
+          </p>
+          <ol class="steps">
+            <li class="step">
+              <span class="step__num">01</span>
+              <h3>Explora</h3>
+              <p>Filtra por comuna, tipo y arriendo o compra. Revisa fotos y datos clave.</p>
+            </li>
+            <li class="step">
+              <span class="step__num">02</span>
+              <h3>Contacta</h3>
+              <p>Habla directo con el publicador o la inmobiliaria para agendar una visita.</p>
+            </li>
+            <li class="step">
+              <span class="step__num">03</span>
+              <h3>Decide</h3>
+              <p>Compara opciones y cierra el trato con claridad en precio y condiciones.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section section--white" id="publicar" aria-labelledby="publicar-title">
+        <div class="section__inner reveal">
+          <p class="section__eyebrow">Para dueños e inmobiliarias</p>
+          <h2 id="publicar-title" class="section__title">Publica o encuentra, tú eliges</h2>
+          <p class="section__lead">
+            RENTTI acompaña ambos lados del mercado: quien busca hogar y quien publica.
+          </p>
+          <div class="split" style="margin-top: var(--space-lg)">
+            <article class="split__panel split__panel--orange">
+              <h3>Publica tu propiedad</h3>
+              <p>Llega a personas que ya están buscando arriendo o compra en tu zona.</p>
+              <div class="split__actions">
+                <a class="btn btn--primary" href="#buscar">Empezar a publicar</a>
+              </div>
+            </article>
+            <article class="split__panel split__panel--green">
+              <h3>Encuentra tu próximo hogar</h3>
+              <p>Usa Arrendar o Comprar, elige comuna y tipo, y revisa lo destacado.</p>
+              <div class="split__actions">
+                <a class="btn btn--soft" href="#buscar">Ir a buscar</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-band" aria-labelledby="cta-title">
+        <div class="cta-band__inner reveal">
+          <h2 id="cta-title">Tu próximo hogar empieza en RENTTI</h2>
+          <p>Busca hoy en arriendo o compra, o publica para que te encuentren.</p>
+          <div class="cta-band__actions">
+            <a class="btn btn--primary" href="#buscar">Buscar ahora</a>
+            <a class="btn btn--ghost" href="#publicar">Publicar propiedad</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <a class="brand" href="/">RENTTI</a>
+        <p>Portal inmobiliario · Chile</p>
+        <a href="mailto:hola@rentti.cl">hola@rentti.cl</a>
+      </div>
+    </footer>
+
+    <script src="js/site.js" defer></script>
+    <script src="js/motion.js" defer></script>
+  </body>
+</html>
