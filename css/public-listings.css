@@ -1,0 +1,223 @@
+.listings-page,
+.detail-page {
+  width: min(var(--content-max), 100%);
+  margin: 0 auto;
+  padding: 2rem var(--page-gutter) 4rem;
+}
+
+.listings-page__intro h1,
+.detail-body h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  letter-spacing: -0.03em;
+  margin: 0 0 0.4rem;
+}
+
+.listings-page__intro p {
+  color: var(--color-ink-muted);
+  margin: 0 0 1.5rem;
+}
+
+.listings-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  align-items: end;
+}
+
+.listings-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.listings-filters input,
+.listings-filters select {
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  min-width: 12rem;
+  background: #fff;
+}
+
+.listings-empty {
+  color: var(--color-ink-muted);
+  padding: 2rem 0;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.listing-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: var(--color-paper-elevated);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.listing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+
+.listing-card__media {
+  aspect-ratio: 4 / 3;
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.listing-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.listing-card__placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  background: linear-gradient(135deg, var(--color-brand-soft), var(--color-mint));
+}
+
+.listing-card__body {
+  padding: 1rem 1.1rem 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.listing-card__body h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.listing-card__meta {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.listing-card__addr {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.92rem;
+}
+
+.listing-card__price,
+.detail-price {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-ink);
+}
+
+.detail-gallery {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 0.65rem;
+  margin-bottom: 1.75rem;
+}
+
+.detail-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+  min-height: 140px;
+  background: var(--color-line);
+}
+
+.detail-gallery img.is-hero {
+  grid-row: 1 / span 2;
+  min-height: 320px;
+}
+
+.detail-gallery__empty {
+  grid-column: 1 / -1;
+  min-height: 240px;
+  border-radius: 1rem;
+}
+
+@media (max-width: 720px) {
+  .detail-gallery {
+    grid-template-columns: 1fr;
+  }
+  .detail-gallery img.is-hero {
+    grid-row: auto;
+    min-height: 220px;
+  }
+}
+
+.detail-addr {
+  color: var(--color-ink-muted);
+  margin: 0 0 0.5rem;
+}
+
+.detail-gc {
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+.detail-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0;
+}
+
+.detail-facts li {
+  padding: 0.35rem 0.7rem;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.detail-section {
+  margin-top: 1.75rem;
+}
+
+.detail-section h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.detail-section p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.detail-code {
+  margin-top: 2rem;
+  color: var(--color-ink-muted);
+  font-size: 0.85rem;
+}
+
+.btn--primary {
+  background: var(--color-brand);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-control);
+  padding: 0.7rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

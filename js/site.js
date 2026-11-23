@@ -23,15 +23,25 @@
       const comuna = String(data.get("comuna") || "").trim();
       const tipo = String(data.get("tipo") || "").trim();
       const results = document.querySelector("#resultados");
-      if (results) {
-        const label = mode === "compra" ? "Compra" : "Arriendo";
-        const bits = [label, tipo, comuna].filter(Boolean).join(" · ");
-        results.hidden = false;
-        results.textContent = bits
-          ? `Mostrando muestra para ${bits}. (Catálogo real próximamente.)`
-          : "Mostrando muestra de propiedades. (Catálogo real próximamente.)";
-        results.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Compra still sample-only; arriendo hits live catalog.
+      if (mode === "compra") {
+        if (results) {
+          const bits = ["Compra", tipo, comuna].filter(Boolean).join(" · ");
+          results.hidden = false;
+          results.textContent = bits
+            ? `Mostrando muestra para ${bits}. (Catálogo compra próximamente.)`
+            : "Mostrando muestra de compra. (Catálogo próximamente.)";
+          results.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
       }
+
+      const params = new URLSearchParams();
+      if (comuna) params.set("comuna", comuna);
+      if (tipo) params.set("tipo", tipo);
+      const qs = params.toString();
+      window.location.href = "/propiedades.php" + (qs ? `?${qs}` : "");
     });
   }
 
