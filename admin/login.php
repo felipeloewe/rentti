@@ -32,13 +32,14 @@ if (rentti_request_is_post()) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <?php rentti_brand_head_tags(); ?>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/admin/admin.css" />
 </head>
 <body class="login-page">
   <div class="login-card">
     <p class="hint" style="margin:0">Backoffice interno</p>
-    <h1>RENTTI</h1>
+    <h1 class="login-brand"><?= rentti_brand_logo('navy', 'stacked', 'brand-logo brand-logo--login') ?></h1>
     <p class="lead">Publica y administra arriendos del sitio.</p>
     <?php if (!rentti_auth_configured()): ?>
       <div class="warn">Falta configurar la contraseña de admin (config.local.php o variable de entorno).</div>

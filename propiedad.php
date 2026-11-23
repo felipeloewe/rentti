@@ -24,14 +24,15 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <?php rentti_brand_head_tags(); ?>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/public-listings.css" />
 </head>
 <body>
-  <header class="site-header">
-    <a class="site-header__brand" href="/">RENTTI</a>
+  <header class="site-header site-header--light">
+    <a class="site-header__brand" href="/"><?= rentti_brand_logo('coral', 'horizontal') ?></a>
     <nav class="site-header__nav" aria-label="Principal">
       <a href="/propiedades.php">Arriendos</a>
       <a href="/#buscar">Buscar</a>
@@ -63,20 +64,115 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
       </div>
 
       <div class="detail-body">
-        <p class="listing-card__meta"><?= h(rentti_type_label($property['property_type'])) ?> en arriendo · <?= h($property['commune']) ?>, <?= h($property['region']) ?></p>
-        <h1><?= h($property['title'] ?: $property['referential_address']) ?></h1>
-        <p class="detail-addr"><?= h($property['referential_address']) ?></p>
-        <p class="detail-price"><?= h(rentti_price_both($property['rent_amount'] !== null ? (float) $property['rent_amount'] : null, $property['rent_currency'])) ?></p>
-        <?php if ($property['common_expenses']): ?>
-          <p class="detail-gc">Gastos comunes: <?= h(rentti_format_price((float) $property['common_expenses'], 'CLP')) ?></p>
+        <?php
+          $hasProject = rentti_property_has_project_summary($property);
+          $tipologias = rentti_decode_tipologias($property['tipologias_json'] ?? '[]');
+          $displayName = ($property['project_name'] ?? '') !== ''
+            ? (string) $property['project_name']
+            : ($property['title'] ?: $property['referential_address']);
+        ?>
+
+        <?php if (($property['delivery_label'] ?? '') !== ''): ?>
+          <p class="detail-delivery">Entrega <?= h((string) $property['delivery_label']) ?></p>
         <?php endif; ?>
 
-        <ul class="detail-facts">
-          <?php if ($property['bedrooms'] !== null): ?><li><?= (int) $property['bedrooms'] ?> dorm.</li><?php endif; ?>
-          <?php if ($property['bathrooms'] !== null): ?><li><?= (int) $property['bathrooms'] ?> baños</li><?php endif; ?>
-          <?php if ($property['useful_area'] !== null): ?><li><?= h((string) $property['useful_area']) ?> m² útiles</li><?php endif; ?>
-          <?php if ($property['built_area'] !== null): ?><li><?= h((string) $property['built_area']) ?> m² construidos</li><?php endif; ?>
-        </ul>
+        <p class="listing-card__meta"><?= h(rentti_type_label($property['property_type'])) ?> · <?= h($property['commune']) ?>, <?= h($property['region']) ?></p>
+        <h1><?= h($displayName) ?></h1>
+        <p class="detail-addr"><?= h($property['referential_address']) ?><?php if ($property['commune']): ?>, <?= h($property['commune']) ?><?php endif; ?></p>
+
+        <?php if ($property['price_from_uf'] !== null && $property['price_from_uf'] !== ''): ?>
+          <div class="detail-from-price">
+            <p class="detail-price">
+              Proyecto desde <?= h(rentti_format_price((float) $property['price_from_uf'], 'UF')) ?>
+              <?php if (($property['promo_badge'] ?? '') !== ''): ?>
+                <span class="promo-badge"><?= h((string) $property['promo_badge']) ?></span>
+              <?php endif; ?>
+            </p>
+            <?php
+              $uf = (float) rentti_config()['uf_clp'];
+              if ($uf > 0):
+            ?>
+              <p class="detail-gc"><?= h(rentti_format_price((float) $property['price_from_uf'] * $uf, 'CLP')) ?></p>
+            <?php endif; ?>
+          </div>
+        <?php else: ?>
+          <p class="detail-price"><?= h(rentti_price_both($property['rent_amount'] !== null ? (float) $property['rent_amount'] : null, $property['rent_currency'])) ?></p>
+          <?php if ($property['common_expenses']): ?>
+            <p class="detail-gc">Gastos comunes: <?= h(rentti_format_price((float) $property['common_expenses'], 'CLP')) ?></p>
+          <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (($property['promo_line_1'] ?? '') !== '' || ($property['promo_line_2'] ?? '') !== ''): ?>
+          <div class="promo-lines">
+            <?php if (($property['promo_line_1'] ?? '') !== ''): ?>
+              <p class="promo-lines__accent"><?= h((string) $property['promo_line_1']) ?></p>
+            <?php endif; ?>
+            <?php if (($property['promo_line_2'] ?? '') !== ''): ?>
+              <p><?= h((string) $property['promo_line_2']) ?></p>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
+
+        <?php
+          $dormRange = rentti_range_label($property['summary_dorms_min'] ?? null, $property['summary_dorms_max'] ?? null, ' dorm.');
+          $bathRange = rentti_range_label($property['summary_baths_min'] ?? null, $property['summary_baths_max'] ?? null, ' baños');
+          $m2Range = rentti_range_label($property['summary_m2_min'] ?? null, $property['summary_m2_max'] ?? null, ' m² útiles');
+        ?>
+        <?php if ($dormRange || $bathRange || $m2Range): ?>
+          <ul class="project-summary-icons" aria-label="Resumen del proyecto">
+            <?php if ($dormRange): ?>
+              <li><?= rentti_project_icon_svg('bed') ?><span><?= h($dormRange) ?></span></li>
+            <?php endif; ?>
+            <?php if ($bathRange): ?>
+              <li><?= rentti_project_icon_svg('bath') ?><span><?= h($bathRange) ?></span></li>
+            <?php endif; ?>
+            <?php if ($m2Range): ?>
+              <li><?= rentti_project_icon_svg('area') ?><span><?= h($m2Range) ?></span></li>
+            <?php endif; ?>
+          </ul>
+        <?php else: ?>
+          <ul class="detail-facts">
+            <?php if ($property['bedrooms'] !== null): ?><li><?= (int) $property['bedrooms'] ?> dorm.</li><?php endif; ?>
+            <?php if ($property['bathrooms'] !== null): ?><li><?= (int) $property['bathrooms'] ?> baños</li><?php endif; ?>
+            <?php if ($property['useful_area'] !== null): ?><li><?= h((string) $property['useful_area']) ?> m² útiles</li><?php endif; ?>
+            <?php if ($property['built_area'] !== null): ?><li><?= h((string) $property['built_area']) ?> m² construidos</li><?php endif; ?>
+          </ul>
+        <?php endif; ?>
+
+        <?php if ($tipologias): ?>
+          <section class="detail-section tipologias">
+            <h2>Modelos con unidades</h2>
+            <div class="tipologia-grid">
+              <?php foreach ($tipologias as $tip): ?>
+                <article class="tipologia-card">
+                  <?php if (($tip['image_url'] ?? '') !== ''): ?>
+                    <div class="tipologia-card__media">
+                      <img src="<?= h((string) $tip['image_url']) ?>" alt="<?= h(($tip['name'] ?? '') !== '' ? (string) $tip['name'] : 'Plano') ?>" loading="lazy" />
+                    </div>
+                  <?php else: ?>
+                    <div class="tipologia-card__media tipologia-card__media--empty" aria-hidden="true"></div>
+                  <?php endif; ?>
+                  <ul class="tipologia-card__stats">
+                    <?php
+                      $m2 = rentti_range_label($tip['m2_min'] ?? null, $tip['m2_max'] ?? null, ' m² totales');
+                      $dormLabel = $tip['dorms'] !== null ? ((int) $tip['dorms'] === 1 ? '1 dormitorio' : ((int) $tip['dorms'] . ' dormitorios')) : '';
+                      $bathLabel = $tip['baths'] !== null ? ((int) $tip['baths'] === 1 ? '1 baño' : ((int) $tip['baths'] . ' baños')) : '';
+                    ?>
+                    <?php if ($m2 !== ''): ?>
+                      <li><?= rentti_project_icon_svg('area') ?><span><?= h($m2) ?></span></li>
+                    <?php endif; ?>
+                    <?php if ($dormLabel !== ''): ?>
+                      <li><?= rentti_project_icon_svg('bed') ?><span><?= h($dormLabel) ?></span></li>
+                    <?php endif; ?>
+                    <?php if ($bathLabel !== ''): ?>
+                      <li><?= rentti_project_icon_svg('bath') ?><span><?= h($bathLabel) ?></span></li>
+                    <?php endif; ?>
+                  </ul>
+                </article>
+              <?php endforeach; ?>
+            </div>
+          </section>
+        <?php endif; ?>
 
         <?php
           $unitFeatures = rentti_active_unit_features($property);
@@ -231,12 +327,17 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
                 data-zone-panel="<?= h($tabKey) ?>"
                 <?= $firstPanel ? '' : 'hidden' ?>
               >
-                <?php if ($tabKey === 'zonas_cercanas'):
-                  $transit = rentti_group_transit($items);
+                <?php
+                  $subLabels = rentti_zone_subtypes_by_tab()[$tabKey] ?? [];
+                  $useColumns = $subLabels !== [];
                 ?>
-                  <div class="zone-transit-grid">
-                    <?php foreach (rentti_zone_subtypes() as $subKey => $subLabel):
-                      $colItems = $transit[$subKey] ?? [];
+                <?php if ($useColumns):
+                  $cols = rentti_group_by_subtype($items, $subLabels);
+                  $colCount = count(array_filter($cols));
+                ?>
+                  <div class="zone-transit-grid<?= $tabKey === 'salud' ? ' zone-transit-grid--2' : '' ?>" style="<?= $tabKey === 'salud' ? '' : '' ?>">
+                    <?php foreach ($subLabels as $subKey => $subLabel):
+                      $colItems = $cols[$subKey] ?? [];
                       if (!$colItems) {
                           continue;
                       }
@@ -247,17 +348,29 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
                           <?php foreach ($colItems as $place): ?>
                             <li class="zone-place">
                               <p class="zone-place__name"><?= h((string) $place['name']) ?></p>
-                              <div class="zone-pills">
-                                <?php if ($place['distance_m'] !== null && $place['distance_m'] !== ''): ?>
-                                  <span class="zone-pill"><?= rentti_zone_icon_svg('pin', 'zone-pill__icon') ?><?= (int) $place['distance_m'] ?> mt.</span>
+                              <?php if ($tabKey === 'salud' || $tabKey === 'educacion' || $tabKey === 'verdes' || $tabKey === 'comercios'): ?>
+                                <?php
+                                  $walkLabel = rentti_zone_walk_distance_label(
+                                      $place['walk_min'] !== null && $place['walk_min'] !== '' ? (int) $place['walk_min'] : null,
+                                      $place['distance_m'] !== null && $place['distance_m'] !== '' ? (int) $place['distance_m'] : null
+                                  );
+                                ?>
+                                <?php if ($walkLabel !== ''): ?>
+                                  <p class="zone-place__meta"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= h($walkLabel) ?></p>
                                 <?php endif; ?>
-                                <?php if ($place['walk_min'] !== null && $place['walk_min'] !== ''): ?>
-                                  <span class="zone-pill"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= (int) $place['walk_min'] ?> min.</span>
-                                <?php endif; ?>
-                                <?php if ($place['drive_min'] !== null && $place['drive_min'] !== ''): ?>
-                                  <span class="zone-pill"><?= rentti_zone_icon_svg('car', 'zone-pill__icon') ?><?= (int) $place['drive_min'] ?> min.</span>
-                                <?php endif; ?>
-                              </div>
+                              <?php else: ?>
+                                <div class="zone-pills">
+                                  <?php if ($place['distance_m'] !== null && $place['distance_m'] !== ''): ?>
+                                    <span class="zone-pill"><?= rentti_zone_icon_svg('pin', 'zone-pill__icon') ?><?= (int) $place['distance_m'] ?> mt.</span>
+                                  <?php endif; ?>
+                                  <?php if ($place['walk_min'] !== null && $place['walk_min'] !== ''): ?>
+                                    <span class="zone-pill"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= (int) $place['walk_min'] ?> min.</span>
+                                  <?php endif; ?>
+                                  <?php if ($place['drive_min'] !== null && $place['drive_min'] !== ''): ?>
+                                    <span class="zone-pill"><?= rentti_zone_icon_svg('car', 'zone-pill__icon') ?><?= (int) $place['drive_min'] ?> min.</span>
+                                  <?php endif; ?>
+                                </div>
+                              <?php endif; ?>
                             </li>
                           <?php endforeach; ?>
                         </ul>
@@ -269,17 +382,15 @@ $photos = $property ? rentti_list_photos((int) $property['id']) : [];
                     <?php foreach ($items as $place): ?>
                       <li class="zone-place">
                         <p class="zone-place__name"><?= h((string) $place['name']) ?></p>
-                        <div class="zone-pills">
-                          <?php if ($place['distance_m'] !== null && $place['distance_m'] !== ''): ?>
-                            <span class="zone-pill"><?= rentti_zone_icon_svg('pin', 'zone-pill__icon') ?><?= (int) $place['distance_m'] ?> mt.</span>
-                          <?php endif; ?>
-                          <?php if ($place['walk_min'] !== null && $place['walk_min'] !== ''): ?>
-                            <span class="zone-pill"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= (int) $place['walk_min'] ?> min.</span>
-                          <?php endif; ?>
-                          <?php if ($place['drive_min'] !== null && $place['drive_min'] !== ''): ?>
-                            <span class="zone-pill"><?= rentti_zone_icon_svg('car', 'zone-pill__icon') ?><?= (int) $place['drive_min'] ?> min.</span>
-                          <?php endif; ?>
-                        </div>
+                        <?php
+                          $walkLabel = rentti_zone_walk_distance_label(
+                              $place['walk_min'] !== null && $place['walk_min'] !== '' ? (int) $place['walk_min'] : null,
+                              $place['distance_m'] !== null && $place['distance_m'] !== '' ? (int) $place['distance_m'] : null
+                          );
+                        ?>
+                        <?php if ($walkLabel !== ''): ?>
+                          <p class="zone-place__meta"><?= rentti_zone_icon_svg('walk', 'zone-pill__icon') ?><?= h($walkLabel) ?></p>
+                        <?php endif; ?>
                       </li>
                     <?php endforeach; ?>
                   </ul>

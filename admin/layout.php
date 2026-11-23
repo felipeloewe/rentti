@@ -14,12 +14,13 @@ function admin_layout_start(string $title, string $active = 'properties'): void
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <?php rentti_brand_head_tags(); ?>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/admin/admin.css" />
 </head>
 <body class="admin">
   <header class="admin-top">
-    <a class="admin-brand" href="/admin/">RENTTI</a>
+    <a class="admin-brand" href="/admin/"><?= rentti_brand_logo('coral', 'horizontal', 'brand-logo brand-logo--admin') ?></a>
     <nav class="admin-nav" aria-label="Admin">
       <a class="<?= $active === 'properties' ? 'is-active' : '' ?>" href="/admin/">Propiedades</a>
       <a href="/propiedades.php" target="_blank" rel="noopener">Ver sitio</a>

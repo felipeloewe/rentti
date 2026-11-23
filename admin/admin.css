@@ -35,6 +35,21 @@ a { color: inherit; }
   letter-spacing: -0.04em;
   text-decoration: none;
   color: var(--color-brand);
+  display: inline-flex;
+  align-items: center;
+}
+.admin-brand .brand-logo {
+  height: 1.65rem;
+  width: auto;
+  max-width: 8.5rem;
+  display: block;
+}
+.login-card .login-brand {
+  margin: 0.2rem 0 0.35rem;
+}
+.login-card h1.login-brand {
+  font-size: inherit;
+  color: inherit;
 }
 
 .admin-nav {

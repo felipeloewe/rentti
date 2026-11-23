@@ -68,6 +68,19 @@ function rentti_property_defaults(): array
         'amenity_bicicletero' => 0,
         'amenity_gimnasio' => 0,
         'amenity_cowork' => 0,
+        'delivery_label' => '',
+        'project_name' => '',
+        'price_from_uf' => null,
+        'promo_badge' => '',
+        'promo_line_1' => '',
+        'promo_line_2' => '',
+        'summary_dorms_min' => null,
+        'summary_dorms_max' => null,
+        'summary_baths_min' => null,
+        'summary_baths_max' => null,
+        'summary_m2_min' => null,
+        'summary_m2_max' => null,
+        'tipologias_json' => '[]',
         'orientation' => '',
         'heating_type' => '',
         'title' => '',
@@ -192,6 +205,26 @@ function rentti_property_from_request(array $src, ?array $existing = null): arra
     foreach (rentti_common_amenity_keys() as $amenityKey) {
         $base[$amenityKey] = rentti_bool_int($src[$amenityKey] ?? 0);
     }
+    $base['delivery_label'] = trim((string) ($src['delivery_label'] ?? ''));
+    $base['project_name'] = trim((string) ($src['project_name'] ?? ''));
+    $base['price_from_uf'] = rentti_nullable_float($src['price_from_uf'] ?? null);
+    $base['promo_badge'] = trim((string) ($src['promo_badge'] ?? ''));
+    $base['promo_line_1'] = trim((string) ($src['promo_line_1'] ?? ''));
+    $base['promo_line_2'] = trim((string) ($src['promo_line_2'] ?? ''));
+    $base['summary_dorms_min'] = rentti_nullable_int($src['summary_dorms_min'] ?? null);
+    $base['summary_dorms_max'] = rentti_nullable_int($src['summary_dorms_max'] ?? null);
+    $base['summary_baths_min'] = rentti_nullable_int($src['summary_baths_min'] ?? null);
+    $base['summary_baths_max'] = rentti_nullable_int($src['summary_baths_max'] ?? null);
+    $base['summary_m2_min'] = rentti_nullable_float($src['summary_m2_min'] ?? null);
+    $base['summary_m2_max'] = rentti_nullable_float($src['summary_m2_max'] ?? null);
+    if (isset($src['tipologia']) && is_array($src['tipologia'])) {
+        $base['tipologias_json'] = rentti_tipologias_from_request($src);
+    } elseif (array_key_exists('tipologias_json', $src)) {
+        $decoded = json_decode((string) $src['tipologias_json'], true);
+        $base['tipologias_json'] = is_array($decoded)
+            ? json_encode($decoded, JSON_UNESCAPED_UNICODE)
+            : (string) ($base['tipologias_json'] ?? '[]');
+    }
     $base['orientation'] = trim((string) ($src['orientation'] ?? ''));
     $base['heating_type'] = trim((string) ($src['heating_type'] ?? ''));
     $base['title'] = trim((string) ($src['title'] ?? ''));
@@ -255,6 +288,10 @@ function rentti_save_property(array $p): int
         'feat_revestimiento_eifs', 'feat_piso_fotolaminado', 'feat_cocina_integrada',
         'amenity_salon_gourmet', 'amenity_conserjeria', 'amenity_ecommerce',
         'amenity_bicicletero', 'amenity_gimnasio', 'amenity_cowork',
+        'delivery_label', 'project_name', 'price_from_uf',
+        'promo_badge', 'promo_line_1', 'promo_line_2',
+        'summary_dorms_min', 'summary_dorms_max', 'summary_baths_min', 'summary_baths_max',
+        'summary_m2_min', 'summary_m2_max', 'tipologias_json',
         'orientation', 'heating_type',
         'title', 'description', 'visit_instructions', 'internal_notes',
         'owner_doc_type', 'owner_doc_number', 'owner_first_name', 'owner_last_name',

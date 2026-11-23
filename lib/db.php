@@ -114,7 +114,7 @@ function rentti_migrate(PDO $pdo): void
         'CREATE TABLE IF NOT EXISTS property_nearby_points (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             property_id INTEGER NOT NULL,
-            category TEXT NOT NULL DEFAULT \'zonas_cercanas\',
+            category TEXT NOT NULL DEFAULT \'transporte\',
             subtype TEXT,
             name TEXT NOT NULL,
             distance_m INTEGER,
@@ -148,6 +148,19 @@ function rentti_migrate(PDO $pdo): void
         'amenity_bicicletero' => 'INTEGER NOT NULL DEFAULT 0',
         'amenity_gimnasio' => 'INTEGER NOT NULL DEFAULT 0',
         'amenity_cowork' => 'INTEGER NOT NULL DEFAULT 0',
+        'delivery_label' => 'TEXT',
+        'project_name' => 'TEXT',
+        'price_from_uf' => 'REAL',
+        'promo_badge' => 'TEXT',
+        'promo_line_1' => 'TEXT',
+        'promo_line_2' => 'TEXT',
+        'summary_dorms_min' => 'INTEGER',
+        'summary_dorms_max' => 'INTEGER',
+        'summary_baths_min' => 'INTEGER',
+        'summary_baths_max' => 'INTEGER',
+        'summary_m2_min' => 'REAL',
+        'summary_m2_max' => 'REAL',
+        'tipologias_json' => 'TEXT',
     ]);
 }
 

@@ -19,14 +19,15 @@ $items = rentti_public_listings($filters);
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <?php rentti_brand_head_tags(); ?>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/public-listings.css" />
 </head>
 <body>
-  <header class="site-header">
-    <a class="site-header__brand" href="/">RENTTI</a>
+  <header class="site-header site-header--light">
+    <a class="site-header__brand" href="/"><?= rentti_brand_logo('coral', 'horizontal') ?></a>
     <nav class="site-header__nav" aria-label="Principal">
       <a href="/#buscar">Buscar</a>
       <a href="/propiedades.php" aria-current="page">Arriendos</a>

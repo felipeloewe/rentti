@@ -38,9 +38,22 @@ if ($forceAmenities && $existing > 0) {
     $p['pets_allowed'] = 1;
     $p['condominium'] = 1;
     $p['parking_covered'] = max(1, (int) ($p['parking_covered'] ?? 0));
+    $p['delivery_label'] = 'Segundo semestre 2027';
+    $p['project_name'] = 'Providencia / Manuel Montt';
+    $p['price_from_uf'] = 3049;
+    $p['promo_badge'] = 'Hasta 5% OFF';
+    $p['promo_line_1'] = 'Pie hasta 49 cuotas sin interés.';
+    $p['promo_line_2'] = 'Regalo del 5% de tu pie.';
+    $p['summary_dorms_min'] = 1;
+    $p['summary_dorms_max'] = 2;
+    $p['summary_baths_min'] = 1;
+    $p['summary_baths_max'] = 2;
+    $p['summary_m2_min'] = 29.2;
+    $p['summary_m2_max'] = 56.83;
+    $p['tipologias_json'] = json_encode(rentti_demo_tipologias(), JSON_UNESCAPED_UNICODE);
     rentti_save_property($p);
     rentti_replace_nearby($id, rentti_demo_nearby_points());
-    echo "Updated amenities + zone on id=$id code={$p['code']}\n";
+    echo "Updated amenities + zone + project on id=$id code={$p['code']}\n";
     exit(0);
 }
 
@@ -82,6 +95,19 @@ $p['owner_last_name'] = 'Propietario';
 $p['owner_email'] = 'demo@rentti.cl';
 $p['owner_doc_number'] = '11.111.111-1';
 $p['published_at'] = rentti_now();
+$p['delivery_label'] = 'Segundo semestre 2027';
+$p['project_name'] = 'Providencia / Manuel Montt';
+$p['price_from_uf'] = 3049;
+$p['promo_badge'] = 'Hasta 5% OFF';
+$p['promo_line_1'] = 'Pie hasta 49 cuotas sin interés.';
+$p['promo_line_2'] = 'Regalo del 5% de tu pie.';
+$p['summary_dorms_min'] = 1;
+$p['summary_dorms_max'] = 2;
+$p['summary_baths_min'] = 1;
+$p['summary_baths_max'] = 2;
+$p['summary_m2_min'] = 29.2;
+$p['summary_m2_max'] = 56.83;
+$p['tipologias_json'] = json_encode(rentti_demo_tipologias(), JSON_UNESCAPED_UNICODE);
 
 $id = rentti_save_property($p);
 rentti_replace_nearby($id, rentti_demo_nearby_points());

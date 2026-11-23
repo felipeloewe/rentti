@@ -11,6 +11,8 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/chile.php';
 require_once __DIR__ . '/amenities.php';
 require_once __DIR__ . '/zone.php';
+require_once __DIR__ . '/project.php';
+require_once __DIR__ . '/brand.php';
 require_once __DIR__ . '/properties.php';
 require_once __DIR__ . '/helpers.php';
 

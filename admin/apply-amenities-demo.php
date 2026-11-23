@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 /**
- * One-click: apply Felipe reference amenity set to the first published property.
- * Login required. Safe to remove after demo fill.
+ * One-click: apply Felipe reference amenity + zone + project set.
+ * Login required.
  */
 require_once __DIR__ . '/../lib/bootstrap.php';
 rentti_require_login();
@@ -35,8 +35,23 @@ $property['condominium'] = 1;
 if ($property['parking_covered'] === null || (int) $property['parking_covered'] < 1) {
     $property['parking_covered'] = 1;
 }
+
+$property['delivery_label'] = 'Segundo semestre 2027';
+$property['project_name'] = 'Providencia / Manuel Montt';
+$property['price_from_uf'] = 3049;
+$property['promo_badge'] = 'Hasta 5% OFF';
+$property['promo_line_1'] = 'Pie hasta 49 cuotas sin interés.';
+$property['promo_line_2'] = 'Regalo del 5% de tu pie.';
+$property['summary_dorms_min'] = 1;
+$property['summary_dorms_max'] = 2;
+$property['summary_baths_min'] = 1;
+$property['summary_baths_max'] = 2;
+$property['summary_m2_min'] = 29.2;
+$property['summary_m2_max'] = 56.83;
+$property['tipologias_json'] = json_encode(rentti_demo_tipologias(), JSON_UNESCAPED_UNICODE);
+
 rentti_save_property($property);
 rentti_replace_nearby((int) $property['id'], rentti_demo_nearby_points());
 
-rentti_flash('ok', 'Amenities + zona de referencia aplicados a ' . $property['code']);
-rentti_redirect('/admin/property-edit.php?id=' . (int) $property['id'] . '&step=2');
+rentti_flash('ok', 'Amenities + zona + proyecto aplicados a ' . $property['code']);
+rentti_redirect('/admin/property-edit.php?id=' . (int) $property['id'] . '&step=1');

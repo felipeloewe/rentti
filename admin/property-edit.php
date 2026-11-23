@@ -125,8 +125,9 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
       <input type="hidden" name="next_step" id="next_step" value="<?= $step ?>" />
 
       <?php if ($step === 1): ?>
+        <?php $tipologias = rentti_decode_tipologias($property['tipologias_json'] ?? '[]'); ?>
         <h2>1. Tipo y arriendo</h2>
-        <p class="hint">MVP: solo operación arriendo. Casa y Departamento primero.</p>
+        <p class="hint">MVP: arriendo unitario o ficha tipo proyecto (entrega, desde UF, tipologías).</p>
         <div class="grid-2">
           <div class="field">
             <label for="property_type">Tipo</label>
@@ -137,7 +138,7 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
             </select>
           </div>
           <div class="field">
-            <label for="rent_currency">Moneda</label>
+            <label for="rent_currency">Moneda arriendo</label>
             <select id="rent_currency" name="rent_currency">
               <?php foreach (rentti_currencies() as $k => $label): ?>
                 <option value="<?= h($k) ?>" <?= $property['rent_currency'] === $k ? 'selected' : '' ?>><?= h($label) ?></option>
@@ -156,8 +157,143 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
         <div class="check-row">
           <label><input type="checkbox" name="seasonal_rent" value="1" <?= !empty($property['seasonal_rent']) ? 'checked' : '' ?> /> Es por temporada</label>
         </div>
-        <!-- preserve later fields -->
-        <?php rentti_hidden_rest($property, ['property_type','rent_currency','rent_amount','common_expenses','seasonal_rent']); ?>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Proyecto (opcional)</h3>
+          <div class="grid-2">
+            <div class="field">
+              <label for="project_name">Nombre proyecto</label>
+              <input id="project_name" name="project_name" type="text" value="<?= h((string) ($property['project_name'] ?? '')) ?>" placeholder="Froilán Roa 5731 - Euro" />
+            </div>
+            <div class="field">
+              <label for="delivery_label">Entrega</label>
+              <input id="delivery_label" name="delivery_label" type="text" value="<?= h((string) ($property['delivery_label'] ?? '')) ?>" placeholder="Segundo semestre 2027" />
+            </div>
+            <div class="field">
+              <label for="price_from_uf">Precio desde (UF)</label>
+              <input id="price_from_uf" name="price_from_uf" type="number" min="0" step="any" value="<?= h($property['price_from_uf'] !== null && $property['price_from_uf'] !== '' ? (string) $property['price_from_uf'] : '') ?>" />
+            </div>
+            <div class="field">
+              <label for="promo_badge">Promo badge (corto)</label>
+              <input id="promo_badge" name="promo_badge" type="text" value="<?= h((string) ($property['promo_badge'] ?? '')) ?>" placeholder="Hasta 5% OFF" />
+            </div>
+            <div class="field">
+              <label for="promo_line_1">Promo línea 1</label>
+              <input id="promo_line_1" name="promo_line_1" type="text" value="<?= h((string) ($property['promo_line_1'] ?? '')) ?>" placeholder="Pie hasta 49 cuotas sin interés" />
+            </div>
+            <div class="field">
+              <label for="promo_line_2">Promo línea 2</label>
+              <input id="promo_line_2" name="promo_line_2" type="text" value="<?= h((string) ($property['promo_line_2'] ?? '')) ?>" placeholder="Regalo del 5% de tu pie" />
+            </div>
+          </div>
+          <p class="hint" style="margin-top:0.85rem">Resumen iconos (rangos del proyecto)</p>
+          <div class="grid-3">
+            <div class="field">
+              <label>Dorm. min / máx</label>
+              <div style="display:flex;gap:0.4rem">
+                <input name="summary_dorms_min" type="number" min="0" step="1" value="<?= h($property['summary_dorms_min'] !== null && $property['summary_dorms_min'] !== '' ? (string) $property['summary_dorms_min'] : '') ?>" placeholder="1" />
+                <input name="summary_dorms_max" type="number" min="0" step="1" value="<?= h($property['summary_dorms_max'] !== null && $property['summary_dorms_max'] !== '' ? (string) $property['summary_dorms_max'] : '') ?>" placeholder="2" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Baños min / máx</label>
+              <div style="display:flex;gap:0.4rem">
+                <input name="summary_baths_min" type="number" min="0" step="1" value="<?= h($property['summary_baths_min'] !== null && $property['summary_baths_min'] !== '' ? (string) $property['summary_baths_min'] : '') ?>" placeholder="1" />
+                <input name="summary_baths_max" type="number" min="0" step="1" value="<?= h($property['summary_baths_max'] !== null && $property['summary_baths_max'] !== '' ? (string) $property['summary_baths_max'] : '') ?>" placeholder="2" />
+              </div>
+            </div>
+            <div class="field">
+              <label>m² útiles min / máx</label>
+              <div style="display:flex;gap:0.4rem">
+                <input name="summary_m2_min" type="number" min="0" step="any" value="<?= h($property['summary_m2_min'] !== null && $property['summary_m2_min'] !== '' ? (string) $property['summary_m2_min'] : '') ?>" placeholder="29.2" />
+                <input name="summary_m2_max" type="number" min="0" step="any" value="<?= h($property['summary_m2_max'] !== null && $property['summary_m2_max'] !== '' ? (string) $property['summary_m2_max'] : '') ?>" placeholder="56.83" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="amenity-block">
+          <h3 class="amenity-block__title">Modelos / tipologías</h3>
+          <p class="hint">Cards con plano (URL imagen) + icon stats. Vacío = no se muestra en ficha.</p>
+          <div class="nearby-table-wrap">
+            <table class="nearby-table" id="tipologia-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Imagen URL</th>
+                  <th>m² min</th>
+                  <th>m² máx</th>
+                  <th>Dorm</th>
+                  <th>Baños</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tipologia-body">
+                <?php
+                $trows = $tipologias ?: [['name' => '', 'image_url' => '', 'm2_min' => '', 'm2_max' => '', 'dorms' => '', 'baths' => '']];
+                foreach ($trows as $i => $row):
+                ?>
+                  <tr class="tipologia-row">
+                    <td><input type="text" name="tipologia[<?= (int) $i ?>][name]" value="<?= h((string) ($row['name'] ?? '')) ?>" placeholder="Modelo 1D" /></td>
+                    <td><input type="text" name="tipologia[<?= (int) $i ?>][image_url]" value="<?= h((string) ($row['image_url'] ?? '')) ?>" placeholder="/assets/…" /></td>
+                    <td><input type="number" step="any" name="tipologia[<?= (int) $i ?>][m2_min]" value="<?= h($row['m2_min'] !== null && $row['m2_min'] !== '' ? (string) $row['m2_min'] : '') ?>" /></td>
+                    <td><input type="number" step="any" name="tipologia[<?= (int) $i ?>][m2_max]" value="<?= h($row['m2_max'] !== null && $row['m2_max'] !== '' ? (string) $row['m2_max'] : '') ?>" /></td>
+                    <td><input type="number" step="1" name="tipologia[<?= (int) $i ?>][dorms]" value="<?= h($row['dorms'] !== null && $row['dorms'] !== '' ? (string) $row['dorms'] : '') ?>" /></td>
+                    <td><input type="number" step="1" name="tipologia[<?= (int) $i ?>][baths]" value="<?= h($row['baths'] !== null && $row['baths'] !== '' ? (string) $row['baths'] : '') ?>" /></td>
+                    <td><button type="button" class="btn btn--ghost btn--small tipologia-remove">×</button></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn--ghost btn--small" id="tipologia-add" style="margin-top:0.65rem">+ Agregar modelo</button>
+        </section>
+        <script>
+          (function () {
+            const body = document.getElementById('tipologia-body');
+            const addBtn = document.getElementById('tipologia-add');
+            if (!body || !addBtn) return;
+            function reindex() {
+              [...body.querySelectorAll('.tipologia-row')].forEach((tr, i) => {
+                tr.querySelectorAll('[name]').forEach(el => {
+                  el.name = el.name.replace(/tipologia\[\d+]/, 'tipologia[' + i + ']');
+                });
+              });
+            }
+            body.addEventListener('click', (e) => {
+              if (!e.target.classList.contains('tipologia-remove')) return;
+              const rows = body.querySelectorAll('.tipologia-row');
+              if (rows.length <= 1) {
+                rows[0].querySelectorAll('input').forEach(i => i.value = '');
+                return;
+              }
+              e.target.closest('.tipologia-row').remove();
+              reindex();
+            });
+            addBtn.addEventListener('click', () => {
+              const i = body.querySelectorAll('.tipologia-row').length;
+              const tr = document.createElement('tr');
+              tr.className = 'tipologia-row';
+              tr.innerHTML = `
+                <td><input type="text" name="tipologia[${i}][name]" placeholder="Modelo" /></td>
+                <td><input type="text" name="tipologia[${i}][image_url]" placeholder="/assets/…" /></td>
+                <td><input type="number" step="any" name="tipologia[${i}][m2_min]" /></td>
+                <td><input type="number" step="any" name="tipologia[${i}][m2_max]" /></td>
+                <td><input type="number" step="1" name="tipologia[${i}][dorms]" /></td>
+                <td><input type="number" step="1" name="tipologia[${i}][baths]" /></td>
+                <td><button type="button" class="btn btn--ghost btn--small tipologia-remove">×</button></td>`;
+              body.appendChild(tr);
+            });
+          })();
+        </script>
+        <?php
+          rentti_hidden_rest($property, [
+            'property_type','rent_currency','rent_amount','common_expenses','seasonal_rent',
+            'project_name','delivery_label','price_from_uf','promo_badge','promo_line_1','promo_line_2',
+            'summary_dorms_min','summary_dorms_max','summary_baths_min','summary_baths_max',
+            'summary_m2_min','summary_m2_max','tipologias_json',
+          ]);
+        ?>
 
       <?php elseif ($step === 2): ?>
         <h2>2. Ubicación</h2>
@@ -232,15 +368,16 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
                 <?php
                 $rows = $nearbyPoints ?: [];
                 if (!$rows) {
-                    $rows = [['category' => 'zonas_cercanas', 'subtype' => 'buses', 'name' => '', 'distance_m' => '', 'walk_min' => '', 'drive_min' => '']];
+                    $rows = [['category' => 'transporte', 'subtype' => 'buses', 'name' => '', 'distance_m' => '', 'walk_min' => '', 'drive_min' => '']];
                 }
                 foreach ($rows as $i => $row):
+                  $rowCat = rentti_zone_normalize_category((string) ($row['category'] ?? 'transporte'));
                 ?>
                   <tr class="nearby-row">
                     <td>
                       <select name="nearby[<?= (int) $i ?>][category]" class="nearby-cat">
                         <?php foreach (rentti_zone_tabs() as $tk => $tmeta): ?>
-                          <option value="<?= h($tk) ?>" <?= ($row['category'] ?? '') === $tk ? 'selected' : '' ?>><?= h($tmeta['label']) ?></option>
+                          <option value="<?= h($tk) ?>" <?= $rowCat === $tk ? 'selected' : '' ?>><?= h($tmeta['label']) ?></option>
                         <?php endforeach; ?>
                       </select>
                     </td>
@@ -283,7 +420,7 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
             const addBtn = document.getElementById('nearby-add');
             if (!body || !addBtn) return;
             const tabOpts = <?= json_encode(rentti_zone_tabs(), JSON_UNESCAPED_UNICODE) ?>;
-            const subOpts = <?= json_encode(rentti_zone_subtypes(), JSON_UNESCAPED_UNICODE) ?>;
+            const subByTab = <?= json_encode(rentti_zone_subtypes_by_tab(), JSON_UNESCAPED_UNICODE) ?>;
 
             function reindex() {
               [...body.querySelectorAll('.nearby-row')].forEach((tr, i) => {
@@ -292,13 +429,21 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
                 });
               });
             }
+            function fillSubOptions(sub, cat, selected) {
+              const map = subByTab[cat] || {};
+              const keys = Object.keys(map);
+              sub.innerHTML = '<option value="">—</option>' + keys.map(k => {
+                const sel = k === selected ? ' selected' : '';
+                return `<option value="${k}"${sel}>${map[k]}</option>`;
+              }).join('');
+              sub.disabled = keys.length === 0;
+              if (!keys.length) sub.value = '';
+            }
             function syncSubtype(tr) {
               const cat = tr.querySelector('.nearby-cat');
               const sub = tr.querySelector('.nearby-sub');
               if (!cat || !sub) return;
-              const on = cat.value === 'zonas_cercanas';
-              sub.disabled = !on;
-              if (!on) sub.value = '';
+              fillSubOptions(sub, cat.value, sub.value);
             }
             body.addEventListener('change', (e) => {
               if (e.target.classList.contains('nearby-cat')) {
@@ -323,10 +468,9 @@ admin_layout_start('Editar ' . $property['code'], 'properties');
               const tr = document.createElement('tr');
               tr.className = 'nearby-row';
               const tabHtml = Object.entries(tabOpts).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
-              const subHtml = '<option value="">—</option>' + Object.entries(subOpts).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
               tr.innerHTML = `
                 <td><select name="nearby[${i}][category]" class="nearby-cat">${tabHtml}</select></td>
-                <td><select name="nearby[${i}][subtype]" class="nearby-sub">${subHtml}</select></td>
+                <td><select name="nearby[${i}][subtype]" class="nearby-sub"></select></td>
                 <td><input type="text" name="nearby[${i}][name]" placeholder="Nombre del lugar" /></td>
                 <td><input type="number" min="0" name="nearby[${i}][distance_m]" /></td>
                 <td><input type="number" min="0" name="nearby[${i}][walk_min]" /></td>
