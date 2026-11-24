@@ -4,14 +4,10 @@
 :root {
   --brand-name: "RENTTI";
 
-  /* Orange / coral (primary action + wordmark) */
+  /* Orange / coral (primary action) */
   --color-brand: #ff5a3d;
   --color-brand-deep: #e04328;
   --color-brand-soft: #ffe8e3;
-
-  /* Brand drawing colors from Felipe mark */
-  --color-brand-navy: #1a2a4a;
-  --color-brand-teal: #2aa8a0;
 
   /* Sage greens (UI accent) */
   --color-accent: #6f9f7a;

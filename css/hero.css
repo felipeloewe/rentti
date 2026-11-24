@@ -21,13 +21,6 @@
   letter-spacing: -0.04em;
   color: #fff;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-}
-
-.site-header__brand .brand-logo {
-  height: 1.85rem;
-  max-width: 9.5rem;
 }
 
 .site-header__nav {
@@ -180,8 +173,6 @@
   letter-spacing: -0.05em;
   line-height: 0.92;
   color: #fff;
-  display: flex;
-  justify-content: center;
 }
 
 .hero__title {
