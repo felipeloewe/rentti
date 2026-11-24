@@ -1,0 +1,5 @@
+# Allow images only
+<FilesMatch "\.(?i:jpe?g|png|webp)$">
+  Require all granted
+</FilesMatch>
+Options -Indexes

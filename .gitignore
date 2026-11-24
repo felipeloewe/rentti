@@ -4,3 +4,13 @@ Thumbs.db
 .idea/
 .vscode/
 node_modules/
+
+# Local secrets & runtime data
+config/config.local.php
+data/*.sqlite
+data/*.sqlite-journal
+data/*.sqlite-wal
+data/*.sqlite-shm
+data/.admin-pass.local
+uploads/properties/*
+!uploads/properties/.gitkeep
